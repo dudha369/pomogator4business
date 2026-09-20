@@ -39,6 +39,7 @@ aerich.ini
 !.env.example
 *.pem
 *.key
+*.secret
 secrets/
 
 # ================================
@@ -94,3 +95,8 @@ desktop.ini
 # ================================
 .coverage
 .pytest_cache/
+
+# ================================
+# Project
+# ================================
+assets/generated_emoji/

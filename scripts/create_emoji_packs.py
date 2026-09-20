@@ -12,7 +12,7 @@ from config import BOT_TOKEN
 from core import database as db
 from core.database import init_db
 
-INPUT_DIR = "generated_emoji"
+INPUT_DIR = "assets/generated_emoji"
 PACK_SIZE = 180
 PACK_COUNT = 8
 EMOJI_LIST = ["🕐"]

@@ -5,7 +5,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from modules.emoji_clock_render import render_clock_emoji
 
-OUTPUT_DIR = "generated_emoji"
+OUTPUT_DIR = "assets/generated_emoji"
 PACK_SIZE = 180
 PACK_COUNT = 8
 
