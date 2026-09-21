@@ -4,8 +4,6 @@ import random
 from core.context import CommandContext
 from core.registry import command
 
-_FRAMES = ["🪙", "🌀", "🪙", "🌀"]
-
 
 @command(name="flip", module="flip", description="Подбрасывает монетку")
 async def cmd_flip(ctx: CommandContext):
@@ -14,16 +12,17 @@ async def cmd_flip(ctx: CommandContext):
         parse_mode="HTML",
     )
 
-    await asyncio.sleep(0.5)
+    await asyncio.sleep(2)
 
     result = random.choice(["ОРЁЛ", "РЕШКА"])
 
     try:
         await ctx.edit_command_message(
-            text=f"""────────────────
-Результат: Выпал{'а' if result == 'РЕШКА' else ''} <b>{result}</b>! 
-────────────────""",
-            parse_mode="HTML",
+            text=f"""
+            ────────────────────
+            **Результат**: Выпал{'а' if result == 'РЕШКА' else ''} __**{result}**__! 
+            ────────────────────""",
+            parse_mode="markdown",
         )
     except Exception:
         pass
