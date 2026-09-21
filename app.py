@@ -16,6 +16,8 @@ from config import (
     WEBHOOK_PATH,
     WEBHOOK_SECRET,
     WEBHOOK_URL,
+    API_HOST,
+    API_PORT,
 )
 from core.database import init_db
 from core.loader import load_modules
@@ -107,3 +109,8 @@ async def telegram_webhook(
 @app.get("/health")
 async def health():
     return {"status": "ok"}
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host=API_HOST, port=API_PORT)
