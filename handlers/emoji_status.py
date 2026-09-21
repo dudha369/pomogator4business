@@ -30,18 +30,29 @@ async def cmd_emoji_status(message: Message):
 
         keyboard = ReplyKeyboardMarkup(
             keyboard=[
-                [KeyboardButton(text=t("emoji_status.open_button", locale), web_app=WebAppInfo(url=WEBAPP_URL))]
+                [
+                    KeyboardButton(
+                        text=t("emoji_status.open_button", locale),
+                        web_app=WebAppInfo(url=WEBAPP_URL),
+                    )
+                ]
             ],
             resize_keyboard=True,
             one_time_keyboard=True,
         )
-        await message.answer(t("emoji_status.request_prompt", locale), reply_markup=keyboard)
+        await message.answer(
+            t("emoji_status.request_prompt", locale), reply_markup=keyboard
+        )
         return
 
     enabled = await db.is_emoji_status_enabled(owner_id)
     new_state = not enabled
     await db.set_emoji_status_enabled(owner_id, new_state)
-    status = t("emoji_status.status_on", locale) if new_state else t("emoji_status.status_off", locale)
+    status = (
+        t("emoji_status.status_on", locale)
+        if new_state
+        else t("emoji_status.status_off", locale)
+    )
     await message.answer(t("emoji_status.toggled", locale, status=status))
 
 
@@ -59,6 +70,11 @@ async def on_web_app_data(message: Message):
 
     if granted:
         await db.set_emoji_status_enabled(owner_id, True)
-        await message.answer(t("emoji_status.granted_enabled", locale), reply_markup=ReplyKeyboardRemove())
+        await message.answer(
+            t("emoji_status.granted_enabled", locale),
+            reply_markup=ReplyKeyboardRemove(),
+        )
     else:
-        await message.answer(t("emoji_status.denied", locale), reply_markup=ReplyKeyboardRemove())
+        await message.answer(
+            t("emoji_status.denied", locale), reply_markup=ReplyKeyboardRemove()
+        )

@@ -17,7 +17,11 @@ async def init_db():
             "rights_json TEXT"
             ")"
         )
-        for column_def in ("owner_name TEXT", "owner_username TEXT", "rights_json TEXT"):
+        for column_def in (
+            "owner_name TEXT",
+            "owner_username TEXT",
+            "rights_json TEXT",
+        ):
             try:
                 await conn.execute(f"ALTER TABLE connections ADD COLUMN {column_def}")
             except Exception:
@@ -290,7 +294,15 @@ async def upsert_connection(
             "owner_name=excluded.owner_name, "
             "owner_username=excluded.owner_username, "
             "rights_json=excluded.rights_json",
-            (connection_id, owner_id, owner_chat_id, int(is_enabled), owner_name, owner_username, rights_json),
+            (
+                connection_id,
+                owner_id,
+                owner_chat_id,
+                int(is_enabled),
+                owner_name,
+                owner_username,
+                rights_json,
+            ),
         )
         await conn.commit()
 
@@ -620,7 +632,9 @@ async def get_recent_history(connection_id, chat_id, limit):
         return [dict(row) for row in reversed(rows)]
 
 
-async def log_archive_event(connection_id, chat_id, message_id, event, old_text, new_text, created_at):
+async def log_archive_event(
+    connection_id, chat_id, message_id, event, old_text, new_text, created_at
+):
     async with aiosqlite.connect(DB_PATH) as conn:
         await conn.execute(
             "INSERT INTO archive_log "
@@ -692,9 +706,7 @@ async def get_mirror(owner_id):
 async def get_all_active_mirrors():
     async with aiosqlite.connect(DB_PATH) as conn:
         conn.row_factory = aiosqlite.Row
-        cursor = await conn.execute(
-            "SELECT * FROM mirror_bots WHERE is_active = 1"
-        )
+        cursor = await conn.execute("SELECT * FROM mirror_bots WHERE is_active = 1")
         rows = await cursor.fetchall()
         return [dict(row) for row in rows]
 
@@ -878,10 +890,16 @@ async def save_ttt_game(connection_id, chat_id, **fields):
             "player_o_id=excluded.player_o_id, player_o_name=excluded.player_o_name, "
             "status=excluded.status, message_id=excluded.message_id",
             (
-                connection_id, chat_id, merged["board"], merged["turn"],
-                merged["player_x_id"], merged["player_x_name"],
-                merged["player_o_id"], merged["player_o_name"],
-                merged["status"], merged["message_id"],
+                connection_id,
+                chat_id,
+                merged["board"],
+                merged["turn"],
+                merged["player_x_id"],
+                merged["player_x_name"],
+                merged["player_o_id"],
+                merged["player_o_name"],
+                merged["status"],
+                merged["message_id"],
             ),
         )
         await conn.commit()
@@ -920,8 +938,13 @@ async def save_wordle_game(connection_id, chat_id, **fields):
             "secret=excluded.secret, guesses=excluded.guesses, status=excluded.status, "
             "message_id=excluded.message_id, starter_id=excluded.starter_id",
             (
-                connection_id, chat_id, merged["secret"], merged["guesses"],
-                merged["status"], merged["message_id"], merged["starter_id"],
+                connection_id,
+                chat_id,
+                merged["secret"],
+                merged["guesses"],
+                merged["status"],
+                merged["message_id"],
+                merged["starter_id"],
             ),
         )
         await conn.commit()
@@ -967,10 +990,17 @@ async def save_chk_game(connection_id, chat_id, **fields):
             "player_b_id=excluded.player_b_id, player_b_name=excluded.player_b_name, "
             "selected=excluded.selected, status=excluded.status, message_id=excluded.message_id",
             (
-                connection_id, chat_id, merged["board"], merged["turn"],
-                merged["player_w_id"], merged["player_w_name"],
-                merged["player_b_id"], merged["player_b_name"],
-                merged["selected"], merged["status"], merged["message_id"],
+                connection_id,
+                chat_id,
+                merged["board"],
+                merged["turn"],
+                merged["player_w_id"],
+                merged["player_w_name"],
+                merged["player_b_id"],
+                merged["player_b_name"],
+                merged["selected"],
+                merged["status"],
+                merged["message_id"],
             ),
         )
         await conn.commit()
@@ -1016,9 +1046,17 @@ async def save_ms_game(connection_id, chat_id, **fields):
             "starter_id=excluded.starter_id, starter_name=excluded.starter_name, "
             "phase=excluded.phase, message_id=excluded.message_id",
             (
-                connection_id, chat_id, merged["size"], merged["bomb_mode"], int(merged["coop"]),
-                merged["mines"], merged["revealed"], merged["starter_id"], merged["starter_name"],
-                merged["phase"], merged["message_id"],
+                connection_id,
+                chat_id,
+                merged["size"],
+                merged["bomb_mode"],
+                int(merged["coop"]),
+                merged["mines"],
+                merged["revealed"],
+                merged["starter_id"],
+                merged["starter_name"],
+                merged["phase"],
+                merged["message_id"],
             ),
         )
         await conn.commit()
@@ -1050,8 +1088,12 @@ async def save_guess_game(connection_id, chat_id, **fields):
             "secret=excluded.secret, max_value=excluded.max_value, "
             "attempts=excluded.attempts, status=excluded.status",
             (
-                connection_id, chat_id, merged["secret"], merged["max_value"],
-                merged["attempts"], merged["status"],
+                connection_id,
+                chat_id,
+                merged["secret"],
+                merged["max_value"],
+                merged["attempts"],
+                merged["status"],
             ),
         )
         await conn.commit()
@@ -1081,7 +1123,13 @@ async def save_city_game(connection_id, chat_id, **fields):
             "VALUES (?, ?, ?, ?, ?) "
             "ON CONFLICT(connection_id, chat_id) DO UPDATE SET "
             "used_words=excluded.used_words, next_letter=excluded.next_letter, status=excluded.status",
-            (connection_id, chat_id, merged["used_words"], merged["next_letter"], merged["status"]),
+            (
+                connection_id,
+                chat_id,
+                merged["used_words"],
+                merged["next_letter"],
+                merged["status"],
+            ),
         )
         await conn.commit()
 
@@ -1119,8 +1167,13 @@ async def save_hangman_game(connection_id, chat_id, **fields):
             "secret=excluded.secret, guessed_letters=excluded.guessed_letters, "
             "mistakes=excluded.mistakes, status=excluded.status, message_id=excluded.message_id",
             (
-                connection_id, chat_id, merged["secret"], merged["guessed_letters"],
-                merged["mistakes"], merged["status"], merged["message_id"],
+                connection_id,
+                chat_id,
+                merged["secret"],
+                merged["guessed_letters"],
+                merged["mistakes"],
+                merged["status"],
+                merged["message_id"],
             ),
         )
         await conn.commit()
@@ -1159,8 +1212,13 @@ async def save_g2048_game(connection_id, chat_id, **fields):
             "board=excluded.board, score=excluded.score, status=excluded.status, "
             "player_id=excluded.player_id, message_id=excluded.message_id",
             (
-                connection_id, chat_id, merged["board"], merged["score"],
-                merged["status"], merged["player_id"], merged["message_id"],
+                connection_id,
+                chat_id,
+                merged["board"],
+                merged["score"],
+                merged["status"],
+                merged["player_id"],
+                merged["message_id"],
             ),
         )
         await conn.commit()

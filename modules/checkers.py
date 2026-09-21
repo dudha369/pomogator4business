@@ -59,8 +59,10 @@ def legal_moves_for(board, index, color):
     if _owner(piece) != color:
         return []
 
-    directions = _DIRECTIONS_KING if _is_king(piece) else (
-        _DIRECTIONS_WHITE if color == "w" else _DIRECTIONS_BLACK
+    directions = (
+        _DIRECTIONS_KING
+        if _is_king(piece)
+        else (_DIRECTIONS_WHITE if color == "w" else _DIRECTIONS_BLACK)
     )
 
     moves = []
@@ -126,7 +128,9 @@ def _build_keyboard(board, selected):
                 if selected == idx:
                     text += "🔲"
                 callback_data = f"chk:{idx}"
-            row_buttons.append(InlineKeyboardButton(text=text, callback_data=callback_data))
+            row_buttons.append(
+                InlineKeyboardButton(text=text, callback_data=callback_data)
+            )
         rows.append(row_buttons)
     return InlineKeyboardMarkup(inline_keyboard=rows)
 
@@ -140,7 +144,9 @@ def _build_text(locale, game, winner):
         color_name = t("chk.white", locale) if winner == "w" else t("chk.black", locale)
         status = t("chk.win", locale, color=color_name)
     else:
-        current = t("chk.white", locale) if game["turn"] == "w" else t("chk.black", locale)
+        current = (
+            t("chk.white", locale) if game["turn"] == "w" else t("chk.black", locale)
+        )
         status = t("chk.turn", locale, color=current)
 
     return header + "\n\n" + status
@@ -151,11 +157,17 @@ async def cmd_chk(ctx):
     starter_name = ctx.message.from_user.full_name if ctx.message.from_user else "White"
 
     await db.save_chk_game(
-        ctx.connection_id, ctx.chat_id,
-        board=initial_board(), turn="w",
-        player_w_id=ctx.message.from_user.id, player_w_name=starter_name,
-        player_b_id=None, player_b_name=None,
-        selected=None, status="active", message_id=None,
+        ctx.connection_id,
+        ctx.chat_id,
+        board=initial_board(),
+        turn="w",
+        player_w_id=ctx.message.from_user.id,
+        player_w_name=starter_name,
+        player_b_id=None,
+        player_b_name=None,
+        selected=None,
+        status="active",
+        message_id=None,
     )
 
     game = await db.get_chk_game(ctx.connection_id, ctx.chat_id)
@@ -192,8 +204,10 @@ async def on_chk_callback(call: CallbackQuery):
     elif game["player_b_id"] is None and user_id != game["player_w_id"]:
         color = "b"
         await db.save_chk_game(
-            business_connection_id, chat_id,
-            player_b_id=user_id, player_b_name=call.from_user.full_name,
+            business_connection_id,
+            chat_id,
+            player_b_id=user_id,
+            player_b_name=call.from_user.full_name,
         )
         game = await db.get_chk_game(business_connection_id, chat_id)
     elif user_id == game["player_b_id"]:
@@ -255,8 +269,12 @@ async def on_chk_callback(call: CallbackQuery):
     next_turn = opponent if not winner else game["turn"]
 
     await db.save_chk_game(
-        business_connection_id, chat_id,
-        board=new_board, turn=next_turn, selected=None, status=status,
+        business_connection_id,
+        chat_id,
+        board=new_board,
+        turn=next_turn,
+        selected=None,
+        status=status,
     )
     game = await db.get_chk_game(business_connection_id, chat_id)
 

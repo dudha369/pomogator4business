@@ -56,7 +56,9 @@ async def _post_all(bot, connection_id, tiles):
         await asyncio.sleep(_POST_DELAY)
 
 
-@command(name="story", module="story", description="Разрезает фото и публикует как Истории")
+@command(
+    name="story", module="story", description="Разрезает фото и публикует как Истории"
+)
 async def cmd_story(ctx: CommandContext):
     target = ctx.message.reply_to_message
     if not target or not target.photo:
@@ -82,7 +84,11 @@ async def cmd_story(ctx: CommandContext):
     await ctx.reply(ctx.t("story.published", parts=parts))
 
 
-@command(name="storyautopost", module="story", description="Включает/выключает автопостинг историй")
+@command(
+    name="storyautopost",
+    module="story",
+    description="Включает/выключает автопостинг историй",
+)
 async def cmd_storyautopost(ctx: CommandContext):
     enabled = await db.toggle_autopost(ctx.connection_id)
     await ctx.delete_command_message()

@@ -32,7 +32,9 @@ async def cmd_spam(message: Message, bot: Bot):
 async def cmd_dspam(message: Message, bot: Bot):
     parts = message.text.split(maxsplit=3)
     if len(parts) < 4:
-        await message.answer("Формат: .dspam [задержка] [кол-во] [текст]\nПример: .dspam 2 10 Привет")
+        await message.answer(
+            "Формат: .dspam [задержка] [кол-во] [текст]\nПример: .dspam 2 10 Привет"
+        )
         return
 
     try:
@@ -58,7 +60,7 @@ async def cmd_dspam(message: Message, bot: Bot):
 
 @router.message(F.text.regexp(r"^\.wspam(\s|$)"))
 async def cmd_wspam(message: Message, bot: Bot):
-    text = message.text[len(".wspam"):].strip()
+    text = message.text[len(".wspam") :].strip()
     if not text:
         await message.answer("Формат: .wspam [предложение]")
         return
@@ -71,7 +73,7 @@ async def cmd_wspam(message: Message, bot: Bot):
 
 @router.message(F.text.regexp(r"^\.lspam(\s|$)"))
 async def cmd_lspam(message: Message, bot: Bot):
-    text = message.text[len(".lspam"):].strip()
+    text = message.text[len(".lspam") :].strip()
     if not text:
         await message.answer("Формат: .lspam [слово или предложение]")
         return

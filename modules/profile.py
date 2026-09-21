@@ -16,7 +16,12 @@ async def _get_bio(bot, user_id):
         return None
 
 
-@command(name="profile", aliases=["профиль"], module="profile", description="Копирует аватар и био собеседника")
+@command(
+    name="profile",
+    aliases=["профиль"],
+    module="profile",
+    description="Копирует аватар и био собеседника",
+)
 async def cmd_profile(ctx: CommandContext):
     target = ctx.message.reply_to_message
     if not target or not target.from_user:
@@ -27,7 +32,9 @@ async def cmd_profile(ctx: CommandContext):
 
     current_bio = await _get_bio(ctx.bot, owner_id)
     current_photo = await download_user_avatar(ctx.bot, owner_id)
-    await db.save_profile_backup(ctx.connection_id, current_bio, current_photo, int(time.time()))
+    await db.save_profile_backup(
+        ctx.connection_id, current_bio, current_photo, int(time.time())
+    )
 
     target_user_id = target.from_user.id
     target_bio = await _get_bio(ctx.bot, target_user_id)

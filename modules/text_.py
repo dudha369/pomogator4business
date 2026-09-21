@@ -26,7 +26,9 @@ def render_meme_text(image_bytes, text):
     for line in lines:
         text_width = draw.textlength(line, font=font)
         x = (image.width - text_width) / 2
-        draw_outlined_text(draw, (x, y), line, font, outline_width=max(2, font_size // 12))
+        draw_outlined_text(
+            draw, (x, y), line, font, outline_width=max(2, font_size // 12)
+        )
         y += line_height
 
     return to_bytes(image)

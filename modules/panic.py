@@ -8,7 +8,7 @@ _CHUNK_SIZE = 100
 
 def _chunks(items, size):
     for i in range(0, len(items), size):
-        yield items[i:i + size]
+        yield items[i : i + size]
 
 
 @command(

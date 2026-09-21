@@ -14,9 +14,14 @@ async def apply_audio_filter(input_bytes, filter_str):
             f.write(input_bytes)
 
         process = await asyncio.create_subprocess_exec(
-            "ffmpeg", "-y", "-i", in_path,
-            "-filter:a", filter_str,
-            "-c:a", "libopus",
+            "ffmpeg",
+            "-y",
+            "-i",
+            in_path,
+            "-filter:a",
+            filter_str,
+            "-c:a",
+            "libopus",
             out_path,
             stdout=asyncio.subprocess.DEVNULL,
             stderr=asyncio.subprocess.DEVNULL,

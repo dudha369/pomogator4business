@@ -15,11 +15,19 @@ _ANALYSIS_POLL_DELAY = 5
 
 def _extract_file(message):
     if message.document:
-        return message.document.file_id, message.document.file_size, message.document.file_name or "file"
+        return (
+            message.document.file_id,
+            message.document.file_size,
+            message.document.file_name or "file",
+        )
     if message.video:
         return message.video.file_id, message.video.file_size, "video.mp4"
     if message.audio:
-        return message.audio.file_id, message.audio.file_size, message.audio.file_name or "audio"
+        return (
+            message.audio.file_id,
+            message.audio.file_size,
+            message.audio.file_name or "audio",
+        )
     return None
 
 
@@ -50,7 +58,9 @@ async def _wait_for_analysis(session, analysis_id):
     headers = {"x-apikey": VT_API_KEY}
     elapsed = 0
     while elapsed < _ANALYSIS_TIMEOUT:
-        async with session.get(f"{_API_BASE}/analyses/{analysis_id}", headers=headers) as resp:
+        async with session.get(
+            f"{_API_BASE}/analyses/{analysis_id}", headers=headers
+        ) as resp:
             payload = await resp.json()
         status = payload["data"]["attributes"]["status"]
         if status == "completed":
@@ -66,7 +76,11 @@ def _format_report(ctx, stats, sha256):
     harmless = stats.get("harmless", 0)
     undetected = stats.get("undetected", 0)
     total = malicious + suspicious + harmless + undetected
-    verdict = ctx.t("check.threats_found") if malicious or suspicious else ctx.t("check.no_threats")
+    verdict = (
+        ctx.t("check.threats_found")
+        if malicious or suspicious
+        else ctx.t("check.no_threats")
+    )
     detections = ctx.t("check.detections", count=malicious + suspicious, total=total)
     return f"{verdict}\n{detections}\nhttps://www.virustotal.com/gui/file/{sha256}"
 

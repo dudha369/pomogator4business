@@ -17,12 +17,20 @@ _BEATS = {"rock": "scissors", "scissors": "paper", "paper": "rock"}
 def _keyboard():
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text=_EMOJI[c], callback_data=f"rps:{c}") for c in _CHOICES]
+            [
+                InlineKeyboardButton(text=_EMOJI[c], callback_data=f"rps:{c}")
+                for c in _CHOICES
+            ]
         ]
     )
 
 
-@command(name="rps", module="rps", description="Камень-ножницы-бумага против бота", owner_only=False)
+@command(
+    name="rps",
+    module="rps",
+    description="Камень-ножницы-бумага против бота",
+    owner_only=False,
+)
 async def cmd_rps(ctx):
     await ctx.delete_command_message()
     await ctx.reply(t("rps.prompt", ctx.locale), reply_markup=_keyboard())

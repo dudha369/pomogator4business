@@ -74,7 +74,9 @@ class PrefixUpdate(BaseModel):
 @router.post("/settings/prefix")
 async def update_prefix(payload: PrefixUpdate, user: dict = Depends(require_user)):
     if len(payload.prefix) != 1:
-        raise HTTPException(status_code=400, detail="Prefix must be exactly one character")
+        raise HTTPException(
+            status_code=400, detail="Prefix must be exactly one character"
+        )
 
     connection = await _require_connection(user["id"])
     await db.set_prefix(connection["connection_id"], payload.prefix)
@@ -131,7 +133,9 @@ class EmojiStatusToggle(BaseModel):
 
 
 @router.post("/settings/emoji-status")
-async def toggle_emoji_status(payload: EmojiStatusToggle, user: dict = Depends(require_user)):
+async def toggle_emoji_status(
+    payload: EmojiStatusToggle, user: dict = Depends(require_user)
+):
     if not await db.is_emoji_status_granted(user["id"]):
         raise HTTPException(status_code=400, detail="Access not granted yet")
 
@@ -147,7 +151,11 @@ async def get_account(user: dict = Depends(require_user)):
     connection_info = None
     if connection:
         try:
-            rights = json.loads(connection["rights_json"]) if connection.get("rights_json") else {}
+            rights = (
+                json.loads(connection["rights_json"])
+                if connection.get("rights_json")
+                else {}
+            )
         except (json.JSONDecodeError, TypeError):
             rights = {}
 

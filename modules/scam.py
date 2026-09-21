@@ -46,7 +46,9 @@ async def _run_checks(user_id, locale):
             result = await checker(user_id)
         except Exception:
             result = None
-        results[name] = result if result is not None else t("scam.api_not_connected", locale)
+        results[name] = (
+            result if result is not None else t("scam.api_not_connected", locale)
+        )
     return results
 
 

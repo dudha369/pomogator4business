@@ -49,7 +49,12 @@ def render_quote(avatar_bytes, name, text):
     return to_bytes(canvas)
 
 
-@command(name="quote", aliases=["цитата"], module="quote", description="Создаёт графическую цитату")
+@command(
+    name="quote",
+    aliases=["цитата"],
+    module="quote",
+    description="Создаёт графическую цитату",
+)
 async def cmd_quote(ctx: CommandContext):
     target = ctx.message.reply_to_message
     if not target:
@@ -61,7 +66,9 @@ async def cmd_quote(ctx: CommandContext):
         await ctx.reply(ctx.t("quote.no_text"))
         return
 
-    name = target.from_user.full_name if target.from_user else ctx.t("quote.unknown_name")
+    name = (
+        target.from_user.full_name if target.from_user else ctx.t("quote.unknown_name")
+    )
     avatar_bytes = None
     if target.from_user:
         avatar_bytes = await download_user_avatar(ctx.bot, target.from_user.id)

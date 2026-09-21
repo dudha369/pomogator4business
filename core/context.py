@@ -26,7 +26,7 @@ class CommandContext:
     def t(self, key, **kwargs):
         return t(key, self.locale, **kwargs)
 
-    async def reply(self, text, **kwargs):
+    async def reply(self, text: str, **kwargs):
         sent = await self.bot.send_message(
             business_connection_id=self.connection_id,
             chat_id=self.chat_id,
@@ -41,6 +41,18 @@ class CommandContext:
             await self.bot.delete_business_messages(
                 business_connection_id=self.connection_id,
                 message_ids=[self.message.message_id],
+            )
+        except Exception:
+            pass
+
+    async def edit_command_message(self, text: str, **kwargs):
+        try:
+            await self.bot.edit_message_text(
+                business_connection_id=self.connection_id,
+                chat_id=self.chat_id,
+                message_id=self.message.message_id,
+                text=text,
+                **kwargs,
             )
         except Exception:
             pass

@@ -70,11 +70,13 @@ def is_win(size, mines, revealed):
 
 def _mines_from_json(raw):
     import json
+
     return set(json.loads(raw))
 
 
 def _mines_to_json(mines):
     import json
+
     return json.dumps(list(mines))
 
 
@@ -92,17 +94,29 @@ def _settings_keyboard(game):
     size_row = []
     for s in (6, 8, 9):
         mark = "✅ " if game["size"] == s else ""
-        size_row.append(InlineKeyboardButton(text=f"{mark}{s}x{s}", callback_data=f"ms:size:{s}"))
+        size_row.append(
+            InlineKeyboardButton(text=f"{mark}{s}x{s}", callback_data=f"ms:size:{s}")
+        )
     rows.append(size_row)
 
     bomb_row = []
     for mode, label in (("5", "5"), ("8", "8"), ("auto", "Auto")):
         mark = "✅ " if game["bomb_mode"] == mode else ""
-        bomb_row.append(InlineKeyboardButton(text=f"{mark}{label}", callback_data=f"ms:bombs:{mode}"))
+        bomb_row.append(
+            InlineKeyboardButton(
+                text=f"{mark}{label}", callback_data=f"ms:bombs:{mode}"
+            )
+        )
     rows.append(bomb_row)
 
     coop_mark = "✅" if game["coop"] else "☑️"
-    rows.append([InlineKeyboardButton(text=f"{coop_mark} co-op", callback_data="ms:coop:toggle")])
+    rows.append(
+        [
+            InlineKeyboardButton(
+                text=f"{coop_mark} co-op", callback_data="ms:coop:toggle"
+            )
+        ]
+    )
     rows.append([InlineKeyboardButton(text="🎮", callback_data="ms:start")])
     rows.append([InlineKeyboardButton(text="🗑", callback_data="ms:stop")])
 
@@ -125,7 +139,9 @@ def _game_keyboard(size, mines, revealed, exploded_idx, finished):
             else:
                 text = "⬜"
                 callback_data = f"ms:cell:{idx}"
-            row_buttons.append(InlineKeyboardButton(text=text, callback_data=callback_data))
+            row_buttons.append(
+                InlineKeyboardButton(text=text, callback_data=callback_data)
+            )
         rows.append(row_buttons)
     return InlineKeyboardMarkup(inline_keyboard=rows)
 
@@ -135,10 +151,17 @@ async def cmd_ms(ctx):
     starter_name = ctx.message.from_user.full_name if ctx.message.from_user else "?"
 
     await db.save_ms_game(
-        ctx.connection_id, ctx.chat_id,
-        size=6, bomb_mode="auto", coop=0,
-        mines="[]", revealed="", starter_id=ctx.message.from_user.id,
-        starter_name=starter_name, phase="settings", message_id=None,
+        ctx.connection_id,
+        ctx.chat_id,
+        size=6,
+        bomb_mode="auto",
+        coop=0,
+        mines="[]",
+        revealed="",
+        starter_id=ctx.message.from_user.id,
+        starter_name=starter_name,
+        phase="settings",
+        message_id=None,
     )
 
     game = await db.get_ms_game(ctx.connection_id, ctx.chat_id)
@@ -181,7 +204,9 @@ async def on_ms_callback(call: CallbackQuery):
         elif action == "bombs":
             await db.save_ms_game(business_connection_id, chat_id, bomb_mode=parts[2])
         elif action == "coop":
-            await db.save_ms_game(business_connection_id, chat_id, coop=0 if game["coop"] else 1)
+            await db.save_ms_game(
+                business_connection_id, chat_id, coop=0 if game["coop"] else 1
+            )
         elif action == "stop":
             await call.message.edit_text(t("ms.cancelled", locale))
             await call.answer()
@@ -191,7 +216,8 @@ async def on_ms_callback(call: CallbackQuery):
             bomb_count = resolve_bomb_count(size, game["bomb_mode"])
             mines = generate_mines(size, bomb_count)
             await db.save_ms_game(
-                business_connection_id, chat_id,
+                business_connection_id,
+                chat_id,
                 mines=_mines_to_json(mines),
                 revealed=_revealed_to_str(set(), size),
                 phase="active",
@@ -242,8 +268,10 @@ async def on_ms_callback(call: CallbackQuery):
     if idx in mines:
         revealed.add(idx)
         await db.save_ms_game(
-            business_connection_id, chat_id,
-            revealed=_revealed_to_str(revealed, size), phase="finished",
+            business_connection_id,
+            chat_id,
+            revealed=_revealed_to_str(revealed, size),
+            phase="finished",
         )
         await call.message.edit_text(
             t("ms.lost", locale),
@@ -256,8 +284,10 @@ async def on_ms_callback(call: CallbackQuery):
 
     if is_win(size, mines, revealed):
         await db.save_ms_game(
-            business_connection_id, chat_id,
-            revealed=_revealed_to_str(revealed, size), phase="finished",
+            business_connection_id,
+            chat_id,
+            revealed=_revealed_to_str(revealed, size),
+            phase="finished",
         )
         await call.message.edit_text(
             t("ms.won", locale),
@@ -266,7 +296,9 @@ async def on_ms_callback(call: CallbackQuery):
         await call.answer()
         return
 
-    await db.save_ms_game(business_connection_id, chat_id, revealed=_revealed_to_str(revealed, size))
+    await db.save_ms_game(
+        business_connection_id, chat_id, revealed=_revealed_to_str(revealed, size)
+    )
     await call.message.edit_reply_markup(
         reply_markup=_game_keyboard(size, mines, revealed, None, False)
     )

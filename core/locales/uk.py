@@ -2,7 +2,6 @@ UK = {
     "common.not_connected": "Бот не підключений до вашого бізнес-акаунта.",
     "common.connection_not_found": "Підключення не знайдено",
     "common.connect_first": "Спочатку підключіть бота в Telegram Business → Чат-боти.",
-
     "start.greeting": (
         "Привіт! Підключи мене в Telegram → Налаштування → Telegram Business → "
         "Чат-боти, а потім налаштуй команди через /settings."
@@ -14,10 +13,8 @@ UK = {
     "settings.enter_new_prefix": "Надішліть новий префікс (один символ, наприклад: ! або /)",
     "settings.prefix_single_char": "Префікс має складатися з одного символу. Спробуйте ще раз.",
     "settings.prefix_updated": "Готово! Новий префікс: {prefix}",
-
     "language.title": "Оберіть мову бота:",
     "language.updated": "Мову змінено на українську 🇺🇦",
-
     "mirror.already_connected": "Дзеркало вже підключено: @{username}.\nЩоб відключити — /unmirror",
     "mirror.onboarding": (
         "⚠️ Увага!\n"
@@ -37,7 +34,6 @@ UK = {
     "mirror.invalid_token_format": "Це не схоже на токен бота. Надішліть токен з BotFather ще раз, або /cancel.",
     "mirror.connection_failed": "Не вдалося підключитися з цим токеном. Перевірте і надішліть знову.",
     "mirror.connected_success": "Готово! Дзеркало @{username} підключено і запущено.",
-
     "emoji_status.not_configured": "Функцію годинника в emoji-статусі ще не налаштовано адміністратором бота (не задано WEBAPP_URL у .env).",
     "emoji_status.request_prompt": "Щоб бот міг оновлювати ваш emoji-статус, дозвольте це через міні-додаток (sendData працює лише через кнопку звичайної клавіатури, не inline):",
     "emoji_status.open_button": "Відкрити",
@@ -46,11 +42,9 @@ UK = {
     "emoji_status.status_off": "вимкнено 🔴",
     "emoji_status.granted_enabled": "Доступ отримано! Годинник в emoji-статусі увімкнено.",
     "emoji_status.denied": "У доступі відмовлено — функція недоступна.",
-
     "bomb.usage_reply": "Формат: .bomb [час] у відповідь на повідомлення\nПриклад: .bomb 15",
     "bomb.usage_full": "Формат: .bomb [час] [текст]\nПриклад: .bomb 5 Секрет або .bomb 30s Секрет",
     "bomb.invalid_time": "Некоректний час. Формат: 10 / 10s / 10m / 10h, максимум 24 години.",
-
     "check.not_configured": "Модуль перевірки файлів не налаштовано (немає VT_API_KEY у .env).",
     "check.usage": "Дайте відповідь командою .check на файл або архів.",
     "check.no_file": "У повідомленні немає придатного файлу.",
@@ -61,18 +55,14 @@ UK = {
     "check.threats_found": "⚠️ Виявлено загрози",
     "check.no_threats": "✅ Загроз не виявлено",
     "check.detections": "Виявлень: {count}/{total}",
-
     "dem.usage_reply": "Дайте відповідь .dem Заголовок | Підзаголовок на фото.",
     "dem.usage_format": "Формат: .dem Заголовок | Підзаголовок",
-
     "echo.toggled": "Режим луни в цьому чаті {status}.",
     "echo.status_on": "увімкнено 🟢",
     "echo.status_off": "вимкнено 🔴",
-
     "fake.usage_pipe": "Формат: .fake Ім'я | @нік | Текст",
     "fake.no_text": "У повідомленні немає тексту для картки.",
     "fake.usage_reply": "Формат: .fake Ім'я | @нік | Текст, або у відповідь на повідомлення співрозмовника.",
-
     "mute.disabled": "🔊 Мут вимкнено.",
     "mute.enabled_forever": "🔇 Мут увімкнено назавжди.",
     "mute.usage": "Формат: .mute [час]\nПриклад: .mute 5m",
@@ -81,9 +71,7 @@ UK = {
     "wmute.usage": "Формат: .wmute [кількість] [час]\nПриклад: .wmute 3 10m",
     "wmute.invalid_time": "Некоректний час. Приклад: .wmute 3 10m",
     "wmute.enabled_after": "⚠️ Мут після {count} повідомлень увімкнено.",
-
     "pet.no_avatar": "Не вдалося отримати аватар для анімації.",
-
     "profile.usage_reply": "Дайте відповідь .profile на повідомлення співрозмовника.",
     "profile.copied": "Скопійовано: {items}. Скасувати — .restore",
     "profile.copy_failed": "Не вдалося скопіювати профіль співрозмовника.",
@@ -92,45 +80,33 @@ UK = {
     "profile.restore_failed": "Не вдалося відновити профіль.",
     "profile.item_bio": "біо",
     "profile.item_avatar": "аватар",
-
     "quote.usage_reply": "Дайте відповідь .quote на потрібне повідомлення.",
     "quote.no_text": "У повідомленні немає тексту для цитати.",
     "quote.unknown_name": "Невідомий",
-
     "story.usage_reply": "Дайте відповідь командою .story на фото.",
     "story.queued": "📥 Фото розбито на {parts} частин і додано до черги автопостингу (по 1 історії на день).",
     "story.published": "✅ Опубліковано {parts} історій.",
     "story.autopost_toggled": "Автопостинг історій {status}.",
     "story.status_on": "увімкнено",
     "story.status_off": "вимкнено",
-
     "text.usage": "Дайте відповідь .text [текст] на фото або надішліть фото з підписом .text [текст].",
-
     "timer.usage": "Формат: .timer [час] [текст]\nПриклад: .timer 10m Нагадай мені",
     "timer.invalid_time": "Некоректний час. Формат: 10s / 10m / 10h, максимум 24 години.",
     "timer.set": "⏱ Таймер встановлено на {time}.",
-
     "tr.usage": "Формат: .tr [код мови] [текст]\nПриклад: .tr en Привіт",
     "tr.failed": "Не вдалося перекласти текст. Перевірте код мови.",
-
     "typing.usage": "Формат: .typing [час] [дія]\nПриклад: .typing 10s або .typing 5m voice",
     "typing.invalid_time": "Некоректний час. Формат: 10s / 5m, максимум 5 хвилин.",
     "typing.unknown_action": "Невідома дія. Доступно: typing, voice, video, file, photo, round, sticker",
-
     "wanted.usage": "Дайте відповідь .wanted [стаття] на фото або повідомлення співрозмовника.",
-
     "words.usage": "Формат: .words [текст]\nПриклад: .words Привіт як справи",
-
     "ascii.usage": "Дайте відповідь .ascii на фото або повідомлення співрозмовника (використаємо його аватар).",
-
     "panic.usage_dm": "Формат: .panic [кількість]\nПриклад: .panic 50 (максимум 1000)",
-
     "archive.sender_you": "Ви",
     "archive.sender_other": "Співрозмовник",
     "archive.sender_both": "Співрозмовник або ви",
     "archive.edited_notice": "✏️ {sender} відредагував(-ла) повідомлення:\n\nБуло:\n{old_text}\n\nСтало:\n{new_text}",
     "archive.deleted_notice": "🗑 {sender} видалив(-ла) повідомлення:\n\n{old_text}",
-
     "scam.new_contact": "👤 Новий співрозмовник: {name}",
     "scam.id_label": "ID: {id}",
     "scam.username_label": "Username: @{username}",
@@ -193,7 +169,7 @@ UK = {
     "roast.line_4": "Твій рівень драми міг би конкурувати з турецькими серіалами.",
     "roast.line_5": "Ти як автокорекція - іноді допомагаєш, але частіше все псуєш.",
     "roast.line_6": "Твоя пунктуальність як розклад автобусів - формально існує.",
-    "roast.line_7": "Ти серйозно думав, що це спрацює? Ставлю на \"ні\".",
+    "roast.line_7": 'Ти серйозно думав, що це спрацює? Ставлю на "ні".',
     "roast.line_8": "У тебе талант перетворювати прості речі на квест на виживання.",
     "roast.line_9": "Твоє почуття гумору працює за підпискою, яка давно закінчилась.",
     "roast.line_10": "Ти як батарейка в пульті - наче є, а користі нуль.",
@@ -217,7 +193,7 @@ UK = {
     "eightball.answer_8": "Зосередься і запитай знову",
     "eightball.answer_9": "Важко сказати",
     "eightball.answer_10": "Скоріш за все",
-    "eightball.answer_11": "Знаки кажуть \"так\"",
+    "eightball.answer_11": 'Знаки кажуть "так"',
     "eightball.answer_12": "Навіть не думай",
     "eightball.usage": "Формат: .8ball [питання]\nПриклад: .8ball Чи варто мені це робити?",
     "calc.usage": "Формат: .calc [вираз]\nПриклад: .calc 2+2*10",

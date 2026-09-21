@@ -54,6 +54,4 @@ async def cmd_bomb(ctx: CommandContext):
     await ctx.delete_command_message()
     sent = await ctx.reply(text)
 
-    asyncio.create_task(
-        _explode(ctx.bot, ctx.connection_id, sent.message_id, seconds)
-    )
+    asyncio.create_task(_explode(ctx.bot, ctx.connection_id, sent.message_id, seconds))

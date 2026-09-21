@@ -2,7 +2,6 @@ EN = {
     "common.not_connected": "The bot isn't connected to your business account.",
     "common.connection_not_found": "Connection not found",
     "common.connect_first": "First connect the bot in Telegram Business → Chatbots.",
-
     "start.greeting": (
         "Hi! Connect me in Telegram → Settings → Telegram Business → "
         "Chatbots, then set up commands via /settings."
@@ -14,10 +13,8 @@ EN = {
     "settings.enter_new_prefix": "Send a new prefix (a single character, e.g. ! or /)",
     "settings.prefix_single_char": "The prefix must be exactly one character. Try again.",
     "settings.prefix_updated": "Done! New prefix: {prefix}",
-
     "language.title": "Choose the bot language:",
     "language.updated": "Language switched to English 🇬🇧",
-
     "mirror.already_connected": "Mirror is already connected: @{username}.\nTo disconnect — /unmirror",
     "mirror.onboarding": (
         "⚠️ Note!\n"
@@ -37,7 +34,6 @@ EN = {
     "mirror.invalid_token_format": "That doesn't look like a bot token. Send the token from BotFather again, or /cancel.",
     "mirror.connection_failed": "Couldn't connect with this token. Check it and send again.",
     "mirror.connected_success": "Done! Mirror @{username} is connected and running.",
-
     "emoji_status.not_configured": "The emoji-status clock feature isn't configured by the bot admin yet (WEBAPP_URL isn't set in .env).",
     "emoji_status.request_prompt": "To let the bot update your emoji status, grant access via the mini app (sendData only works through a regular keyboard button, not inline):",
     "emoji_status.open_button": "Open",
@@ -46,11 +42,9 @@ EN = {
     "emoji_status.status_off": "disabled 🔴",
     "emoji_status.granted_enabled": "Access granted! The emoji-status clock is enabled.",
     "emoji_status.denied": "Access denied — the feature is unavailable.",
-
     "bomb.usage_reply": "Format: .bomb [time] in reply to a message\nExample: .bomb 15",
     "bomb.usage_full": "Format: .bomb [time] [text]\nExample: .bomb 5 Secret or .bomb 30s Secret",
     "bomb.invalid_time": "Invalid time. Format: 10 / 10s / 10m / 10h, max 24 hours.",
-
     "check.not_configured": "The file-check module isn't configured (no VT_API_KEY in .env).",
     "check.usage": "Reply with .check to a file or archive.",
     "check.no_file": "There's no suitable file in this message.",
@@ -61,18 +55,14 @@ EN = {
     "check.threats_found": "⚠️ Threats detected",
     "check.no_threats": "✅ No threats detected",
     "check.detections": "Detections: {count}/{total}",
-
     "dem.usage_reply": "Reply with .dem Title | Subtitle to a photo.",
     "dem.usage_format": "Format: .dem Title | Subtitle",
-
     "echo.toggled": "Echo mode in this chat is {status}.",
     "echo.status_on": "on 🟢",
     "echo.status_off": "off 🔴",
-
     "fake.usage_pipe": "Format: .fake Name | @handle | Text",
     "fake.no_text": "There's no text in this message for the card.",
     "fake.usage_reply": "Format: .fake Name | @handle | Text, or reply to a message from the other person.",
-
     "mute.disabled": "🔊 Mute disabled.",
     "mute.enabled_forever": "🔇 Mute enabled forever.",
     "mute.usage": "Format: .mute [time]\nExample: .mute 5m",
@@ -81,9 +71,7 @@ EN = {
     "wmute.usage": "Format: .wmute [count] [time]\nExample: .wmute 3 10m",
     "wmute.invalid_time": "Invalid time. Example: .wmute 3 10m",
     "wmute.enabled_after": "⚠️ Mute after {count} messages enabled.",
-
     "pet.no_avatar": "Couldn't get an avatar for the animation.",
-
     "profile.usage_reply": "Reply with .profile to a message from the other person.",
     "profile.copied": "Copied: {items}. To undo — .restore",
     "profile.copy_failed": "Couldn't copy the other person's profile.",
@@ -92,45 +80,33 @@ EN = {
     "profile.restore_failed": "Couldn't restore the profile.",
     "profile.item_bio": "bio",
     "profile.item_avatar": "avatar",
-
     "quote.usage_reply": "Reply with .quote to the message you want.",
     "quote.no_text": "There's no text in this message to quote.",
     "quote.unknown_name": "Unknown",
-
     "story.usage_reply": "Reply with .story to a photo.",
     "story.queued": "📥 The photo was split into {parts} parts and added to the autopost queue (1 story per day).",
     "story.published": "✅ Published {parts} stories.",
     "story.autopost_toggled": "Story autoposting is {status}.",
     "story.status_on": "on",
     "story.status_off": "off",
-
     "text.usage": "Reply with .text [text] to a photo, or send a photo captioned .text [text].",
-
     "timer.usage": "Format: .timer [time] [text]\nExample: .timer 10m Remind me",
     "timer.invalid_time": "Invalid time. Format: 10s / 10m / 10h, max 24 hours.",
     "timer.set": "⏱ Timer set for {time}.",
-
     "tr.usage": "Format: .tr [language code] [text]\nExample: .tr en Привет",
     "tr.failed": "Couldn't translate the text. Check the language code.",
-
     "typing.usage": "Format: .typing [time] [action]\nExample: .typing 10s or .typing 5m voice",
     "typing.invalid_time": "Invalid time. Format: 10s / 5m, max 5 minutes.",
     "typing.unknown_action": "Unknown action. Available: typing, voice, video, file, photo, round, sticker",
-
     "wanted.usage": "Reply with .wanted [charge] to a photo or a message from the other person.",
-
     "words.usage": "Format: .words [text]\nExample: .words Hello there friend",
-
     "ascii.usage": "Reply with .ascii to a photo or a message from the other person (uses their avatar).",
-
     "panic.usage_dm": "Format: .panic [count]\nExample: .panic 50 (max 1000)",
-
     "archive.sender_you": "You",
     "archive.sender_other": "The other person",
     "archive.sender_both": "The other person or you",
     "archive.edited_notice": "✏️ {sender} edited a message:\n\nWas:\n{old_text}\n\nNow:\n{new_text}",
     "archive.deleted_notice": "🗑 {sender} deleted a message:\n\n{old_text}",
-
     "scam.new_contact": "👤 New contact: {name}",
     "scam.id_label": "ID: {id}",
     "scam.username_label": "Username: @{username}",
@@ -141,7 +117,7 @@ EN = {
     "fake.watermark": "🛠 template, generated by the bot",
     "voice.usage": "Format: .voice <robot|echo|helium|off>\nExample: .voice helium",
     "voice.disabled": "🎙 Voice effect disabled.",
-    "voice.enabled": "🎙 Voice effect \"{effect}\" enabled for this chat.",
+    "voice.enabled": '🎙 Voice effect "{effect}" enabled for this chat.',
     "stt.usage": "Reply with .stt to a voice message or video note.",
     "stt.processing": "🎧 Transcribing...",
     "stt.failed": "Couldn't transcribe the audio.",

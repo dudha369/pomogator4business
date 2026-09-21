@@ -26,7 +26,9 @@ def all_time_keys():
 
 
 def _read_sticker_bytes(pack_index, time_key):
-    path = os.path.join(INPUT_DIR, f"pack_{pack_index}", f"{time_key.replace(':', '-')}.png")
+    path = os.path.join(
+        INPUT_DIR, f"pack_{pack_index}", f"{time_key.replace(':', '-')}.png"
+    )
     with open(path, "rb") as f:
         return f.read()
 
@@ -57,14 +59,16 @@ async def _upload_pack(bot, me, pack_index, chunk):
         first_batch = chunk[:50]
         stickers = [_build_input_sticker(pack_index, t) for t in first_batch]
 
-        await _call_with_retry(lambda: bot.create_new_sticker_set(
-            user_id=ADMIN_USER_ID,
-            name=pack_name,
-            title=f"Clock pack {pack_index + 1}/{PACK_COUNT}",
-            stickers=stickers,
-            sticker_type="custom_emoji",
-            needs_repainting=True,
-        ))
+        await _call_with_retry(
+            lambda: bot.create_new_sticker_set(
+                user_id=ADMIN_USER_ID,
+                name=pack_name,
+                title=f"Clock pack {pack_index + 1}/{PACK_COUNT}",
+                stickers=stickers,
+                sticker_type="custom_emoji",
+                needs_repainting=True,
+            )
+        )
 
         uploaded_count = len(first_batch)
         await db.upsert_clock_pack(pack_index, pack_name, uploaded_count, 0)
@@ -74,11 +78,13 @@ async def _upload_pack(bot, me, pack_index, chunk):
     for time_key in remaining:
         sticker = _build_input_sticker(pack_index, time_key)
 
-        await _call_with_retry(lambda sticker=sticker: bot.add_sticker_to_set(
-            user_id=ADMIN_USER_ID,
-            name=pack_name,
-            sticker=sticker,
-        ))
+        await _call_with_retry(
+            lambda sticker=sticker: bot.add_sticker_to_set(
+                user_id=ADMIN_USER_ID,
+                name=pack_name,
+                sticker=sticker,
+            )
+        )
 
         uploaded_count += 1
         await db.upsert_clock_pack(pack_index, pack_name, uploaded_count, 0)
@@ -95,7 +101,9 @@ async def _upload_pack(bot, me, pack_index, chunk):
 
 async def main():
     if not os.path.isdir(INPUT_DIR):
-        print(f"Папка {INPUT_DIR}/ не найдена. Сначала запустите generate_emoji_images.py")
+        print(
+            f"Папка {INPUT_DIR}/ не найдена. Сначала запустите generate_emoji_images.py"
+        )
         return
 
     await init_db()
@@ -112,7 +120,7 @@ async def main():
             print(f"pack {pack_index}: уже готов, пропускаю")
             continue
 
-        chunk = times[pack_index * PACK_SIZE:(pack_index + 1) * PACK_SIZE]
+        chunk = times[pack_index * PACK_SIZE : (pack_index + 1) * PACK_SIZE]
         await _upload_pack(bot, me, pack_index, chunk)
 
     total_mapped = await db.count_clock_emojis()

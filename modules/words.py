@@ -14,7 +14,7 @@ async def cmd_words(ctx: CommandContext):
         return
 
     words = ctx.args.split()[:_MAX_WORDS]
-    await ctx.delete_command_message()
+    await ctx.edit_command_message(words.pop(0))
 
     for word in words:
         await ctx.reply(word)

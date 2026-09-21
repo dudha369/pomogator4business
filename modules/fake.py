@@ -49,12 +49,19 @@ def render_fake_card(avatar_bytes, name, handle, text, watermark):
         draw.text((_PADDING, y), line, font=font_text, fill="white")
         y += 40
 
-    draw.text((_PADDING, height - _PADDING), watermark, font=font_watermark, fill="#5a6a78")
+    draw.text(
+        (_PADDING, height - _PADDING), watermark, font=font_watermark, fill="#5a6a78"
+    )
 
     return to_bytes(canvas)
 
 
-@command(name="fake", aliases=["фейк", "твит"], module="fake", description="Создаёт шаблон карточки поста")
+@command(
+    name="fake",
+    aliases=["фейк", "твит"],
+    module="fake",
+    description="Создаёт шаблон карточки поста",
+)
 async def cmd_fake(ctx: CommandContext):
     target = ctx.message.reply_to_message
     raw = ctx.args.strip()
@@ -72,7 +79,9 @@ async def cmd_fake(ctx: CommandContext):
         avatar_bytes = None
     elif target and target.from_user:
         name = target.from_user.full_name
-        handle = f"@{target.from_user.username}" if target.from_user.username else "@user"
+        handle = (
+            f"@{target.from_user.username}" if target.from_user.username else "@user"
+        )
         text = raw or (target.text or target.caption or "")
         if not text:
             await ctx.reply(ctx.t("fake.no_text"))

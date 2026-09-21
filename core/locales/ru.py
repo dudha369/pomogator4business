@@ -2,7 +2,6 @@ RU = {
     "common.not_connected": "Бот не подключён к вашему бизнес-аккаунту.",
     "common.connection_not_found": "Подключение не найдено",
     "common.connect_first": "Сначала подключите бота в Telegram Business → Чат-боты.",
-
     "start.greeting": (
         "Привет! Подключи меня в Telegram → Настройки → Telegram Business → "
         "Чат-боты, а затем настрой команды через /settings."
@@ -14,10 +13,8 @@ RU = {
     "settings.enter_new_prefix": "Отправьте новый префикс (один символ, например: ! или /)",
     "settings.prefix_single_char": "Префикс должен состоять из одного символа. Попробуйте ещё раз.",
     "settings.prefix_updated": "Готово! Новый префикс: {prefix}",
-
     "language.title": "Выберите язык бота:",
     "language.updated": "Язык переключён на русский 🇷🇺",
-
     "mirror.already_connected": "Зеркало уже подключено: @{username}.\nЧтобы отключить — /unmirror",
     "mirror.onboarding": (
         "⚠️ Внимание!\n"
@@ -37,7 +34,6 @@ RU = {
     "mirror.invalid_token_format": "Это не похоже на токен бота. Пришлите токен из BotFather ещё раз, либо /cancel.",
     "mirror.connection_failed": "Не удалось подключиться с этим токеном. Проверьте и пришлите снова.",
     "mirror.connected_success": "Готово! Зеркало @{username} подключено и запущено.",
-
     "emoji_status.not_configured": "Функция часов в эмодзи-статусе ещё не настроена администратором бота (не задан WEBAPP_URL в .env).",
     "emoji_status.request_prompt": "Чтобы бот мог обновлять ваш эмодзи-статус, разрешите это через мини-приложение (sendData работает только через кнопку обычной клавиатуры, не inline):",
     "emoji_status.open_button": "Открыть",
@@ -46,11 +42,9 @@ RU = {
     "emoji_status.status_off": "выключены 🔴",
     "emoji_status.granted_enabled": "Доступ получен! Часы в эмодзи-статусе включены.",
     "emoji_status.denied": "Доступ не выдан — функция недоступна.",
-
     "bomb.usage_reply": "Формат: .bomb [время] в ответ на сообщение\nПример: .bomb 15",
     "bomb.usage_full": "Формат: .bomb [время] [текст]\nПример: .bomb 5 Секрет или .bomb 30s Секрет",
     "bomb.invalid_time": "Некорректное время. Формат: 10 / 10s / 10m / 10h, максимум 24 часа.",
-
     "check.not_configured": "Модуль проверки файлов не настроен (нет VT_API_KEY в .env).",
     "check.usage": "Ответьте командой .check на файл или архив.",
     "check.no_file": "В сообщении нет подходящего файла.",
@@ -61,18 +55,14 @@ RU = {
     "check.threats_found": "⚠️ Обнаружены угрозы",
     "check.no_threats": "✅ Угроз не обнаружено",
     "check.detections": "Обнаружений: {count}/{total}",
-
     "dem.usage_reply": "Ответьте .dem Заголовок | Подзаголовок на фото.",
     "dem.usage_format": "Формат: .dem Заголовок | Подзаголовок",
-
     "echo.toggled": "Режим эха в этом чате {status}.",
     "echo.status_on": "включён 🟢",
     "echo.status_off": "выключен 🔴",
-
     "fake.usage_pipe": "Формат: .fake Имя | @ник | Текст",
     "fake.no_text": "В сообщении нет текста для карточки.",
     "fake.usage_reply": "Формат: .fake Имя | @ник | Текст, либо ответом на сообщение собеседника.",
-
     "mute.disabled": "🔊 Мут отключён.",
     "mute.enabled_forever": "🔇 Мут включён навсегда.",
     "mute.usage": "Формат: .mute [время]\nПример: .mute 5m",
@@ -81,9 +71,7 @@ RU = {
     "wmute.usage": "Формат: .wmute [кол-во] [время]\nПример: .wmute 3 10m",
     "wmute.invalid_time": "Некорректное время. Пример: .wmute 3 10m",
     "wmute.enabled_after": "⚠️ Мут после {count} сообщений включён.",
-
     "pet.no_avatar": "Не удалось получить аватар для анимации.",
-
     "profile.usage_reply": "Ответьте .profile на сообщение собеседника.",
     "profile.copied": "Скопировано: {items}. Отменить — .restore",
     "profile.copy_failed": "Не удалось скопировать профиль собеседника.",
@@ -92,45 +80,33 @@ RU = {
     "profile.restore_failed": "Не удалось восстановить профиль.",
     "profile.item_bio": "био",
     "profile.item_avatar": "аватар",
-
     "quote.usage_reply": "Ответьте .quote на нужное сообщение.",
     "quote.no_text": "В сообщении нет текста для цитаты.",
     "quote.unknown_name": "Неизвестный",
-
     "story.usage_reply": "Ответьте командой .story на фото.",
     "story.queued": "📥 Фото разбито на {parts} частей и добавлено в очередь автопостинга (по 1 истории в день).",
     "story.published": "✅ Опубликовано {parts} историй.",
     "story.autopost_toggled": "Автопостинг историй {status}.",
     "story.status_on": "включён",
     "story.status_off": "выключен",
-
     "text.usage": "Ответьте .text [текст] на фото или отправьте фото с подписью .text [текст].",
-
     "timer.usage": "Формат: .timer [время] [текст]\nПример: .timer 10m Напомни мне",
     "timer.invalid_time": "Некорректное время. Формат: 10s / 10m / 10h, максимум 24 часа.",
     "timer.set": "⏱ Таймер установлен на {time}.",
-
     "tr.usage": "Формат: .tr [код языка] [текст]\nПример: .tr en Привет",
     "tr.failed": "Не удалось перевести текст. Проверьте код языка.",
-
     "typing.usage": "Формат: .typing [время] [действие]\nПример: .typing 10s или .typing 5m voice",
     "typing.invalid_time": "Некорректное время. Формат: 10s / 5m, максимум 5 минут.",
     "typing.unknown_action": "Неизвестное действие. Доступно: typing, voice, video, file, photo, round, sticker",
-
     "wanted.usage": "Ответьте .wanted [статья] на фото или сообщение собеседника.",
-
     "words.usage": "Формат: .words [текст]\nПример: .words Привет как дела",
-
     "ascii.usage": "Ответьте .ascii на фото или сообщение собеседника (используем его аватар).",
-
     "panic.usage_dm": "Формат: .panic [кол-во]\nПример: .panic 50 (максимум 1000)",
-
     "archive.sender_you": "Вы",
     "archive.sender_other": "Собеседник",
     "archive.sender_both": "Собеседник или вы",
     "archive.edited_notice": "✏️ {sender} отредактировал(а) сообщение:\n\nБыло:\n{old_text}\n\nСтало:\n{new_text}",
     "archive.deleted_notice": "🗑 {sender} удалил(а) сообщение:\n\n{old_text}",
-
     "scam.new_contact": "👤 Новый собеседник: {name}",
     "scam.id_label": "ID: {id}",
     "scam.username_label": "Username: @{username}",
@@ -193,7 +169,7 @@ RU = {
     "roast.line_4": "Твой уровень драмы мог бы конкурировать с турецкими сериалами.",
     "roast.line_5": "Ты как автокоррект - иногда помогаешь, но чаще всё портишь.",
     "roast.line_6": "Твоя пунктуальность как расписание автобусов - формально существует.",
-    "roast.line_7": "Ты серьёзно думал, что это сработает? Ставлю на \"нет\".",
+    "roast.line_7": 'Ты серьёзно думал, что это сработает? Ставлю на "нет".',
     "roast.line_8": "У тебя талант превращать простые вещи в квест на выживание.",
     "roast.line_9": "Твоё чувство юмора работает по подписке, и она давно истекла.",
     "roast.line_10": "Ты как батарейка в пульте - вроде есть, а толку ноль.",
@@ -217,7 +193,7 @@ RU = {
     "eightball.answer_8": "Сконцентрируйся и спроси снова",
     "eightball.answer_9": "Трудно сказать",
     "eightball.answer_10": "Скорее всего",
-    "eightball.answer_11": "Знаки говорят \"да\"",
+    "eightball.answer_11": 'Знаки говорят "да"',
     "eightball.answer_12": "Даже не думай",
     "eightball.usage": "Формат: .8ball [вопрос]\nПример: .8ball Стоит ли мне это делать?",
     "calc.usage": "Формат: .calc [выражение]\nПример: .calc 2+2*10",

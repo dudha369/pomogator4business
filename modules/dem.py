@@ -28,8 +28,14 @@ def render_demotivator(image_bytes, title, subtitle):
     subtitle_font = load_font(28, serif=True)
 
     temp_draw = ImageDraw.Draw(Image.new("RGB", (1, 1)))
-    title_lines = wrap_text(temp_draw, title, title_font, canvas_width * 0.9) if title else []
-    subtitle_lines = wrap_text(temp_draw, subtitle, subtitle_font, canvas_width * 0.9) if subtitle else []
+    title_lines = (
+        wrap_text(temp_draw, title, title_font, canvas_width * 0.9) if title else []
+    )
+    subtitle_lines = (
+        wrap_text(temp_draw, subtitle, subtitle_font, canvas_width * 0.9)
+        if subtitle
+        else []
+    )
 
     text_height = 0
     if title_lines:
@@ -45,8 +51,12 @@ def render_demotivator(image_bytes, title, subtitle):
     frame_x = _BORDER
     frame_y = _BORDER
     draw.rectangle(
-        [frame_x - _INNER_BORDER, frame_y - _INNER_BORDER,
-         frame_x + photo.width + _INNER_BORDER, frame_y + photo.height + _INNER_BORDER],
+        [
+            frame_x - _INNER_BORDER,
+            frame_y - _INNER_BORDER,
+            frame_x + photo.width + _INNER_BORDER,
+            frame_y + photo.height + _INNER_BORDER,
+        ],
         outline="white",
         width=_INNER_BORDER,
     )
@@ -63,13 +73,20 @@ def render_demotivator(image_bytes, title, subtitle):
 
     for line in subtitle_lines:
         width = draw.textlength(line, font=subtitle_font)
-        draw.text(((canvas_width - width) / 2, y), line, font=subtitle_font, fill="white")
+        draw.text(
+            ((canvas_width - width) / 2, y), line, font=subtitle_font, fill="white"
+        )
         y += 36
 
     return to_bytes(canvas)
 
 
-@command(name="dem", aliases=["дем", "демотиватор"], module="dem", description="Создаёт демотиватор")
+@command(
+    name="dem",
+    aliases=["дем", "демотиватор"],
+    module="dem",
+    description="Создаёт демотиватор",
+)
 async def cmd_dem(ctx: CommandContext):
     target = ctx.message.reply_to_message
     photo_source = target if target and target.photo else ctx.message

@@ -35,7 +35,11 @@ def _modules_keyboard(disabled):
         is_on = module_name not in disabled
         label = f"{'✅' if is_on else '⛔️'} {module_name}"
         buttons.append(
-            [InlineKeyboardButton(text=label, callback_data=f"settings:toggle:{module_name}")]
+            [
+                InlineKeyboardButton(
+                    text=label, callback_data=f"settings:toggle:{module_name}"
+                )
+            ]
         )
     buttons.append([InlineKeyboardButton(text="⬅️", callback_data="settings:back")])
     return InlineKeyboardMarkup(inline_keyboard=buttons)

@@ -27,7 +27,9 @@ async def cmd_mirror(message: Message, state: FSMContext):
     locale = await db.get_locale(message.from_user.id)
     existing = await db.get_mirror(message.from_user.id)
     if existing and existing["is_active"]:
-        await message.answer(t("mirror.already_connected", locale, username=existing["bot_username"]))
+        await message.answer(
+            t("mirror.already_connected", locale, username=existing["bot_username"])
+        )
         return
 
     await message.answer(t("mirror.onboarding", locale))

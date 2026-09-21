@@ -9,31 +9,21 @@ _FRAMES = ["🪙", "🌀", "🪙", "🌀"]
 
 @command(name="flip", module="flip", description="Подбрасывает монетку")
 async def cmd_flip(ctx: CommandContext):
-    await ctx.delete_command_message()
+    await ctx.edit_command_message(
+        '<tg-emoji emoji-id="5920267974043766795">🪙</tg-emoji>',
+        parse_mode="HTML",
+    )
 
-    sent = await ctx.reply(_FRAMES[0])
+    await asyncio.sleep(0.5)
 
-    for frame in _FRAMES[1:]:
-        await asyncio.sleep(0.35)
-        try:
-            await ctx.bot.edit_message_text(
-                business_connection_id=ctx.connection_id,
-                chat_id=ctx.chat_id,
-                message_id=sent.message_id,
-                text=frame,
-            )
-        except Exception:
-            pass
-
-    result = random.choice(["Орёл", "Решка"])
-    await asyncio.sleep(0.35)
+    result = random.choice(["ОРЁЛ", "РЕШКА"])
 
     try:
-        await ctx.bot.edit_message_text(
-            business_connection_id=ctx.connection_id,
-            chat_id=ctx.chat_id,
-            message_id=sent.message_id,
-            text=f"🪙 {result}!",
+        await ctx.edit_command_message(
+            text=f"""────────────────
+Результат: Выпал{'а' if result == 'РЕШКА' else ''} <b>{result}</b>! 
+────────────────""",
+            parse_mode="HTML",
         )
     except Exception:
         pass

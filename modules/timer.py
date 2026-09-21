@@ -19,7 +19,11 @@ async def _fire(bot, connection_id, chat_id, seconds, text):
         pass
 
 
-@command(name="timer", module="timer", description="Отправляет сообщение через заданное время")
+@command(
+    name="timer",
+    module="timer",
+    description="Отправляет сообщение через заданное время",
+)
 async def cmd_timer(ctx: CommandContext):
     parts = ctx.args.split(maxsplit=1)
     if len(parts) < 2:
@@ -35,6 +39,4 @@ async def cmd_timer(ctx: CommandContext):
     await ctx.delete_command_message()
     await ctx.reply(ctx.t("timer.set", time=raw_time))
 
-    asyncio.create_task(
-        _fire(ctx.bot, ctx.connection_id, ctx.chat_id, seconds, text)
-    )
+    asyncio.create_task(_fire(ctx.bot, ctx.connection_id, ctx.chat_id, seconds, text))

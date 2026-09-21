@@ -65,7 +65,9 @@ def _render_board(locale, secret_length, guesses, status, secret):
     return "\n".join(lines)
 
 
-@command(name="word", module="wordle", description="Начинает игру Wordle", owner_only=False)
+@command(
+    name="word", module="wordle", description="Начинает игру Wordle", owner_only=False
+)
 async def cmd_word(ctx):
     raw = ctx.args.strip().upper()
     if raw:
@@ -77,15 +79,21 @@ async def cmd_word(ctx):
         secret = random.choice(WORDS)
 
     await db.save_wordle_game(
-        ctx.connection_id, ctx.chat_id,
-        secret=secret, guesses="[]", status="active",
-        message_id=None, starter_id=ctx.message.from_user.id,
+        ctx.connection_id,
+        ctx.chat_id,
+        secret=secret,
+        guesses="[]",
+        status="active",
+        message_id=None,
+        starter_id=ctx.message.from_user.id,
     )
 
     text = _render_board(ctx.locale, len(secret), [], "active", secret)
     await ctx.delete_command_message()
     sent = await ctx.reply(text)
-    await db.save_wordle_game(ctx.connection_id, ctx.chat_id, message_id=sent.message_id)
+    await db.save_wordle_game(
+        ctx.connection_id, ctx.chat_id, message_id=sent.message_id
+    )
 
 
 async def handle_wordle_guess(bot, connection, message, locale, raw_guess):
@@ -109,8 +117,10 @@ async def handle_wordle_guess(bot, connection, message, locale, raw_guess):
         status = "active"
 
     await db.save_wordle_game(
-        connection["connection_id"], message.chat.id,
-        guesses=json.dumps(guesses, ensure_ascii=False), status=status,
+        connection["connection_id"],
+        message.chat.id,
+        guesses=json.dumps(guesses, ensure_ascii=False),
+        status=status,
     )
 
     text = _render_board(locale, len(secret), guesses, status, secret)

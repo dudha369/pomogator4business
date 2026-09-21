@@ -12,7 +12,13 @@ registry.register_passive_module("archive")
 
 
 def _format_edited(locale, old_text, new_text, sender_label):
-    return t("archive.edited_notice", locale, sender=sender_label, old_text=old_text, new_text=new_text)
+    return t(
+        "archive.edited_notice",
+        locale,
+        sender=sender_label,
+        old_text=old_text,
+        new_text=new_text,
+    )
 
 
 def _format_deleted(locale, old_text, sender_label):
@@ -30,7 +36,9 @@ async def on_business_edited(message: Message, bot: Bot):
     if new_text is None:
         return
 
-    old_text = await db.get_history_text(connection_id, message.chat.id, message.message_id)
+    old_text = await db.get_history_text(
+        connection_id, message.chat.id, message.message_id
+    )
 
     connection = await db.get_connection(connection_id)
     if not connection:
@@ -38,7 +46,11 @@ async def on_business_edited(message: Message, bot: Bot):
 
     is_owner = message.from_user.id == connection["owner_id"]
     locale = await db.get_locale(connection["owner_id"])
-    sender_label = t("archive.sender_you", locale) if is_owner else t("archive.sender_other", locale)
+    sender_label = (
+        t("archive.sender_you", locale)
+        if is_owner
+        else t("archive.sender_other", locale)
+    )
 
     if old_text is not None and old_text != new_text:
         try:
@@ -60,7 +72,12 @@ async def on_business_edited(message: Message, bot: Bot):
         )
 
     await db.save_history(
-        connection_id, message.chat.id, message.message_id, is_owner, new_text, int(time.time())
+        connection_id,
+        message.chat.id,
+        message.message_id,
+        is_owner,
+        new_text,
+        int(time.time()),
     )
 
 
@@ -92,6 +109,12 @@ async def on_business_deleted(event: BusinessMessagesDeleted, bot: Bot):
             pass
 
         await db.log_archive_event(
-            connection_id, event.chat.id, message_id, "deleted", old_text, None, int(time.time())
+            connection_id,
+            event.chat.id,
+            message_id,
+            "deleted",
+            old_text,
+            None,
+            int(time.time()),
         )
         await db.delete_history(connection_id, event.chat.id, message_id)

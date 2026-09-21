@@ -14,7 +14,12 @@ _JOKES = [
 ]
 
 
-@command(name="joke", aliases=["анекдот"], module="joke", description="Отправляет случайную шутку")
+@command(
+    name="joke",
+    aliases=["анекдот"],
+    module="joke",
+    description="Отправляет случайную шутку",
+)
 async def cmd_joke(ctx: CommandContext):
     await ctx.delete_command_message()
     joke = random.choice(_JOKES)

@@ -37,8 +37,11 @@ async def cmd_city(ctx):
 
     if not game or game["status"] != "active":
         await db.save_city_game(
-            ctx.connection_id, ctx.chat_id,
-            used_words=json.dumps([city], ensure_ascii=False), next_letter=next_letter(city), status="active",
+            ctx.connection_id,
+            ctx.chat_id,
+            used_words=json.dumps([city], ensure_ascii=False),
+            next_letter=next_letter(city),
+            status="active",
         )
         await ctx.reply(ctx.t("city.started", city=city, letter=next_letter(city)))
         return
@@ -56,6 +59,9 @@ async def cmd_city(ctx):
     used.append(city)
     new_next = next_letter(city)
     await db.save_city_game(
-        ctx.connection_id, ctx.chat_id, used_words=json.dumps(used, ensure_ascii=False), next_letter=new_next,
+        ctx.connection_id,
+        ctx.chat_id,
+        used_words=json.dumps(used, ensure_ascii=False),
+        next_letter=new_next,
     )
     await ctx.reply(ctx.t("city.accepted", city=city, letter=new_next))

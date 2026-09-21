@@ -21,7 +21,9 @@ async def on_business_message(message: Message, bot: Bot):
     if not connection or not connection["is_enabled"]:
         return
 
-    await db.log_message(connection["connection_id"], message.chat.id, message.message_id)
+    await db.log_message(
+        connection["connection_id"], message.chat.id, message.message_id
+    )
 
     text_for_history = message.text or message.caption
     if text_for_history is not None:
@@ -45,7 +47,9 @@ async def on_business_message(message: Message, bot: Bot):
         if "scam" not in disabled:
             await handle_new_contact(bot, connection, message)
 
-        if "mute" not in disabled and await handle_mute_incoming(bot, connection, message):
+        if "mute" not in disabled and await handle_mute_incoming(
+            bot, connection, message
+        ):
             return
 
         if "echo" not in disabled and await db.is_echo_enabled(
@@ -58,7 +62,9 @@ async def on_business_message(message: Message, bot: Bot):
                     chat_id=message.chat.id,
                     text=text,
                 )
-                await db.log_message(connection["connection_id"], message.chat.id, sent.message_id)
+                await db.log_message(
+                    connection["connection_id"], message.chat.id, sent.message_id
+                )
             return
 
     text = message.text or message.caption
@@ -75,7 +81,7 @@ async def on_business_message(message: Message, bot: Bot):
     if not text.startswith(prefix):
         return
 
-    body = text[len(prefix):].strip()
+    body = text[len(prefix) :].strip()
     if not body:
         return
 

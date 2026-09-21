@@ -70,7 +70,7 @@ async def handle_type_trigger(bot, message, connection, trigger):
     if message.from_user.id != connection["owner_id"]:
         return
 
-    text = (message.text or "")[len(trigger):].strip()
+    text = (message.text or "")[len(trigger) :].strip()
     if not text:
         return
 

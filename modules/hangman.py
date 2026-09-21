@@ -35,22 +35,31 @@ def _render(locale, game):
     elif game["status"] == "lost":
         lines.append(t("hangman.lost", locale, secret=secret))
     else:
-        lines.append(t("hangman.hint", locale, mistakes=game["mistakes"], max=_MAX_MISTAKES))
+        lines.append(
+            t("hangman.hint", locale, mistakes=game["mistakes"], max=_MAX_MISTAKES)
+        )
 
     return "\n".join(lines)
 
 
 async def _start(ctx, secret):
     await db.save_hangman_game(
-        ctx.connection_id, ctx.chat_id,
-        secret=secret, guessed_letters="[]", mistakes=0, status="active", message_id=None,
+        ctx.connection_id,
+        ctx.chat_id,
+        secret=secret,
+        guessed_letters="[]",
+        mistakes=0,
+        status="active",
+        message_id=None,
     )
     game = await db.get_hangman_game(ctx.connection_id, ctx.chat_id)
     text = _render(ctx.locale, game)
 
     await ctx.delete_command_message()
     sent = await ctx.reply(text)
-    await db.save_hangman_game(ctx.connection_id, ctx.chat_id, message_id=sent.message_id)
+    await db.save_hangman_game(
+        ctx.connection_id, ctx.chat_id, message_id=sent.message_id
+    )
 
 
 async def _handle_guess(ctx, game, letter):
@@ -71,8 +80,11 @@ async def _handle_guess(ctx, game, letter):
         status = "lost"
 
     await db.save_hangman_game(
-        ctx.connection_id, ctx.chat_id,
-        guessed_letters=json.dumps(guessed, ensure_ascii=False), mistakes=mistakes, status=status,
+        ctx.connection_id,
+        ctx.chat_id,
+        guessed_letters=json.dumps(guessed, ensure_ascii=False),
+        mistakes=mistakes,
+        status=status,
     )
     game = await db.get_hangman_game(ctx.connection_id, ctx.chat_id)
     text = _render(ctx.locale, game)
@@ -92,7 +104,9 @@ async def _handle_guess(ctx, game, letter):
             pass
 
     sent = await ctx.reply(text)
-    await db.save_hangman_game(ctx.connection_id, ctx.chat_id, message_id=sent.message_id)
+    await db.save_hangman_game(
+        ctx.connection_id, ctx.chat_id, message_id=sent.message_id
+    )
 
 
 @command(name="hangman", module="hangman", description="Виселица", owner_only=False)

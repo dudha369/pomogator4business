@@ -8,9 +8,14 @@ from core.registry import command
 router = Router(name="ttt")
 
 _LINES = [
-    (0, 1, 2), (3, 4, 5), (6, 7, 8),
-    (0, 3, 6), (1, 4, 7), (2, 5, 8),
-    (0, 4, 8), (2, 4, 6),
+    (0, 1, 2),
+    (3, 4, 5),
+    (6, 7, 8),
+    (0, 3, 6),
+    (1, 4, 7),
+    (2, 5, 8),
+    (0, 4, 8),
+    (2, 4, 6),
 ]
 _SYMBOLS = {"X": "❌", "O": "⭕", ".": "·"}
 
@@ -35,7 +40,9 @@ def _build_keyboard(board, finished):
                 callback_data = "ttt:noop"
             else:
                 callback_data = f"ttt:{idx}" if cell == "." else "ttt:taken"
-            row.append(InlineKeyboardButton(text=_SYMBOLS[cell], callback_data=callback_data))
+            row.append(
+                InlineKeyboardButton(text=_SYMBOLS[cell], callback_data=callback_data)
+            )
         rows.append(row)
 
     if finished:
@@ -116,11 +123,16 @@ async def on_ttt_callback(call: CallbackQuery):
     if action == "restart":
         starter_name = call.from_user.full_name
         await db.save_ttt_game(
-            business_connection_id, chat_id,
-            board=".........", turn="X",
-            player_x_id=call.from_user.id, player_x_name=starter_name,
-            player_o_id=None, player_o_name=None,
-            status="active", message_id=call.message.message_id,
+            business_connection_id,
+            chat_id,
+            board=".........",
+            turn="X",
+            player_x_id=call.from_user.id,
+            player_x_name=starter_name,
+            player_o_id=None,
+            player_o_name=None,
+            status="active",
+            message_id=call.message.message_id,
         )
         game = await db.get_ttt_game(business_connection_id, chat_id)
         await call.message.edit_text(
@@ -142,8 +154,10 @@ async def on_ttt_callback(call: CallbackQuery):
     elif game["player_o_id"] is None and user_id != game["player_x_id"]:
         symbol = "O"
         await db.save_ttt_game(
-            business_connection_id, chat_id,
-            player_o_id=user_id, player_o_name=call.from_user.full_name,
+            business_connection_id,
+            chat_id,
+            player_o_id=user_id,
+            player_o_name=call.from_user.full_name,
         )
         game = await db.get_ttt_game(business_connection_id, chat_id)
     elif user_id == game["player_o_id"]:
@@ -168,8 +182,11 @@ async def on_ttt_callback(call: CallbackQuery):
     status = "finished" if winner else "active"
 
     await db.save_ttt_game(
-        business_connection_id, chat_id,
-        board=board_str, turn=next_turn, status=status,
+        business_connection_id,
+        chat_id,
+        board=board_str,
+        turn=next_turn,
+        status=status,
     )
     game = await db.get_ttt_game(business_connection_id, chat_id)
 

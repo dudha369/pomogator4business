@@ -13,7 +13,7 @@ _SIZE = 4
 
 
 def _get_rows(board):
-    return [board[r * _SIZE:(r + 1) * _SIZE] for r in range(_SIZE)]
+    return [board[r * _SIZE : (r + 1) * _SIZE] for r in range(_SIZE)]
 
 
 def _rows_to_board(rows):
@@ -45,7 +45,11 @@ def slide_row_left(row):
 
 
 def move(board, direction):
-    rows = _get_rows(board) if direction in ("left", "right") else _get_rows(transpose(board))
+    rows = (
+        _get_rows(board)
+        if direction in ("left", "right")
+        else _get_rows(transpose(board))
+    )
     new_rows = []
     total_points = 0
     changed = False
@@ -127,16 +131,20 @@ def _keyboard(board, finished):
         for c in range(_SIZE):
             v = board[r * _SIZE + c]
             text = str(v) if v else "·"
-            row_buttons.append(InlineKeyboardButton(text=text, callback_data="g2048:noop"))
+            row_buttons.append(
+                InlineKeyboardButton(text=text, callback_data="g2048:noop")
+            )
         rows.append(row_buttons)
 
     if not finished:
-        rows.append([
-            InlineKeyboardButton(text="⬅️", callback_data="g2048:left"),
-            InlineKeyboardButton(text="⬆️", callback_data="g2048:up"),
-            InlineKeyboardButton(text="⬇️", callback_data="g2048:down"),
-            InlineKeyboardButton(text="➡️", callback_data="g2048:right"),
-        ])
+        rows.append(
+            [
+                InlineKeyboardButton(text="⬅️", callback_data="g2048:left"),
+                InlineKeyboardButton(text="⬆️", callback_data="g2048:up"),
+                InlineKeyboardButton(text="⬇️", callback_data="g2048:down"),
+                InlineKeyboardButton(text="➡️", callback_data="g2048:right"),
+            ]
+        )
     else:
         rows.append([InlineKeyboardButton(text="🔄", callback_data="g2048:restart")])
 
@@ -155,9 +163,13 @@ def _text(locale, score, status):
 async def cmd_2048(ctx):
     board = new_board()
     await db.save_g2048_game(
-        ctx.connection_id, ctx.chat_id,
-        board=_board_to_str(board), score=0, status="active",
-        player_id=ctx.message.from_user.id, message_id=None,
+        ctx.connection_id,
+        ctx.chat_id,
+        board=_board_to_str(board),
+        score=0,
+        status="active",
+        player_id=ctx.message.from_user.id,
+        message_id=None,
     )
 
     text = _text(ctx.locale, 0, "active")
@@ -193,8 +205,11 @@ async def on_2048_callback(call: CallbackQuery):
     if action == "restart":
         board = new_board()
         await db.save_g2048_game(
-            business_connection_id, chat_id,
-            board=_board_to_str(board), score=0, status="active",
+            business_connection_id,
+            chat_id,
+            board=_board_to_str(board),
+            score=0,
+            status="active",
         )
         await call.message.edit_text(
             _text(locale, 0, "active"), reply_markup=_keyboard(board, False)
@@ -227,8 +242,11 @@ async def on_2048_callback(call: CallbackQuery):
         status = "lost"
 
     await db.save_g2048_game(
-        business_connection_id, chat_id,
-        board=_board_to_str(new_b), score=score, status=status,
+        business_connection_id,
+        chat_id,
+        board=_board_to_str(new_b),
+        score=score,
+        status=status,
     )
 
     await call.message.edit_text(

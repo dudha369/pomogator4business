@@ -16,7 +16,7 @@ async def cmd_poll(ctx: CommandContext):
         return
 
     question = parts[0]
-    options = parts[1:_MAX_OPTIONS + 1]
+    options = parts[1 : _MAX_OPTIONS + 1]
 
     await ctx.delete_command_message()
     await ctx.bot.send_poll(

@@ -24,7 +24,7 @@ def main():
         pack_dir = os.path.join(OUTPUT_DIR, f"pack_{pack_index}")
         os.makedirs(pack_dir, exist_ok=True)
 
-        chunk = times[pack_index * PACK_SIZE:(pack_index + 1) * PACK_SIZE]
+        chunk = times[pack_index * PACK_SIZE : (pack_index + 1) * PACK_SIZE]
         for time_key in chunk:
             image = render_clock_emoji(time_key)
             safe_name = time_key.replace(":", "-")

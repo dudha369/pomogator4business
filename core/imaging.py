@@ -14,7 +14,16 @@ def load_font(size, serif=False):
         return ImageFont.load_default()
 
 
-def draw_outlined_text(draw, position, text, font, fill="white", outline="black", outline_width=3, anchor=None):
+def draw_outlined_text(
+    draw,
+    position,
+    text,
+    font,
+    fill="white",
+    outline="black",
+    outline_width=3,
+    anchor=None,
+):
     x, y = position
     for dx in range(-outline_width, outline_width + 1):
         for dy in range(-outline_width, outline_width + 1):
