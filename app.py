@@ -22,7 +22,7 @@ async def lifespan(app: FastAPI):
     logging.basicConfig(level=logging.INFO)
 
     load_modules()
-    await Tortoise.init(config=TORTOISE_ORM)
+    await Tortoise.init(config=TORTOISE_ORM, _enable_global_fallback=True)
 
     if WEBHOOK_URL:
         await bot.set_webhook(
