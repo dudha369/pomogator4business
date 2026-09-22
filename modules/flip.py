@@ -12,17 +12,17 @@ async def cmd_flip(ctx: CommandContext):
         parse_mode="HTML",
     )
 
-    await asyncio.sleep(2)
+    await asyncio.sleep(1.8)
 
     result = random.choice(["ОРЁЛ", "РЕШКА"])
 
     try:
         await ctx.edit_command_message(
             text=f"""
-            ────────────────────
-            **Результат**: Выпал{'а' if result == 'РЕШКА' else ''} __**{result}**__! 
-            ────────────────────""",
-            parse_mode="markdown",
+────────────────────
+<tg-emoji emoji-id="5379600444098093058">🪙</tg-emoji> <b>Результат</b>: Выпал{'а' if result == 'РЕШКА' else ''} <b><u>{result}</u></b>! 
+────────────────────""",
+            parse_mode="html",
         )
     except Exception:
         pass

@@ -12,4 +12,4 @@ async def cmd_plove(ctx: CommandContext):
 
     await ctx.delete_command_message()
     decorated = f"❤️ {ctx.args} ❤️"
-    await typewriter(ctx.bot, ctx.connection, ctx.chat_id, decorated, "▌")
+    await typewriter(ctx.bot, ctx.connection, ctx.chat_id, decorated, "❤️")

@@ -20,6 +20,7 @@ def _chunks(items, size):
 async def cmd_panic(ctx: CommandContext):
     parts = ctx.args.split()
     if not parts or not parts[0].isdigit():
+        await ctx.delete_command_message()
         await ctx.bot.send_message(
             chat_id=ctx.connection["owner_chat_id"],
             text=ctx.t("panic.usage_dm"),

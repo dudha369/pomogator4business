@@ -70,7 +70,7 @@ async def cmd_pet(ctx: CommandContext):
         avatar_bytes = await download_user_avatar(ctx.bot, ctx.connection["owner_id"])
 
     if not avatar_bytes:
-        await ctx.reply(ctx.t("pet.no_avatar"))
+        await ctx.answer(ctx.t("pet.no_avatar"))
         return
 
     gif_bytes = render_pet(avatar_bytes)

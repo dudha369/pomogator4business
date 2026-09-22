@@ -10,5 +10,5 @@ _PHRASES = ["ХАХАХАХАХА", "🤣🤣🤣", "ой не могу", "пр�
 async def cmd_haha(ctx: CommandContext):
     await ctx.delete_command_message()
     for phrase in _PHRASES:
-        await ctx.reply(phrase)
+        await ctx.answer(phrase)
         await asyncio.sleep(0.4)

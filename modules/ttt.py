@@ -90,7 +90,7 @@ async def cmd_ttt(ctx):
     keyboard = _build_keyboard(game["board"], False)
 
     await ctx.delete_command_message()
-    sent = await ctx.reply(text, reply_markup=keyboard)
+    sent = await ctx.answer(text, reply_markup=keyboard)
     await db.save_ttt_game(ctx.connection_id, ctx.chat_id, message_id=sent.message_id)
 
 

@@ -169,7 +169,7 @@ async def cmd_ms(ctx):
     keyboard = _settings_keyboard(game)
 
     await ctx.delete_command_message()
-    sent = await ctx.reply(text, reply_markup=keyboard)
+    sent = await ctx.answer(text, reply_markup=keyboard)
     await db.save_ms_game(ctx.connection_id, ctx.chat_id, message_id=sent.message_id)
 
 

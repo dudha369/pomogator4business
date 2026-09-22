@@ -26,15 +26,15 @@ class CommandContext:
     def t(self, key, **kwargs):
         return t(key, self.locale, **kwargs)
 
-    async def reply(self, text: str, **kwargs):
-        sent = await self.bot.send_message(
+    async def answer(self, text: str, **kwargs):
+        msg = await self.bot.send_message(
             business_connection_id=self.connection_id,
             chat_id=self.chat_id,
             text=text,
             **kwargs,
         )
-        await db.log_message(self.connection_id, self.chat_id, sent.message_id)
-        return sent
+        await db.log_message(self.connection_id, self.chat_id, msg.message_id)
+        return msg
 
     async def delete_command_message(self):
         try:

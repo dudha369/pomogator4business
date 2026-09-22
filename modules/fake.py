@@ -13,11 +13,10 @@ _PADDING = 36
 _AVATAR_SIZE = 90
 
 
-def render_fake_card(avatar_bytes, name, handle, text, watermark):
+def render_fake_card(avatar_bytes, name, handle, text):
     font_name = load_font(26)
     font_handle = load_font(20)
     font_text = load_font(30)
-    font_watermark = load_font(16)
 
     measure = ImageDraw.Draw(Image.new("RGB", (1, 1)))
     text_width = _WIDTH - _PADDING * 2
@@ -25,7 +24,7 @@ def render_fake_card(avatar_bytes, name, handle, text, watermark):
 
     header_height = _AVATAR_SIZE + _PADDING
     text_block_height = len(lines) * 40
-    height = header_height + text_block_height + _PADDING * 3
+    height = header_height + text_block_height + _PADDING
 
     canvas = Image.new("RGB", (_WIDTH, height), "#15202b")
     draw = ImageDraw.Draw(canvas)
@@ -49,10 +48,6 @@ def render_fake_card(avatar_bytes, name, handle, text, watermark):
         draw.text((_PADDING, y), line, font=font_text, fill="white")
         y += 40
 
-    draw.text(
-        (_PADDING, height - _PADDING), watermark, font=font_watermark, fill="#5a6a78"
-    )
-
     return to_bytes(canvas)
 
 
@@ -74,7 +69,7 @@ async def cmd_fake(ctx: CommandContext):
             name, text = parts
             handle = "@" + name.lower().replace(" ", "")
         else:
-            await ctx.reply(ctx.t("fake.usage_pipe"))
+            await ctx.answer(ctx.t("fake.usage_pipe"))
             return
         avatar_bytes = None
     elif target and target.from_user:
@@ -84,14 +79,14 @@ async def cmd_fake(ctx: CommandContext):
         )
         text = raw or (target.text or target.caption or "")
         if not text:
-            await ctx.reply(ctx.t("fake.no_text"))
+            await ctx.answer(ctx.t("fake.no_text"))
             return
         avatar_bytes = await download_user_avatar(ctx.bot, target.from_user.id)
     else:
-        await ctx.reply(ctx.t("fake.usage_reply"))
+        await ctx.answer(ctx.t("fake.usage_reply"))
         return
 
-    result = render_fake_card(avatar_bytes, name, handle, text, ctx.t("fake.watermark"))
+    result = render_fake_card(avatar_bytes, name, handle, text)
 
     await ctx.delete_command_message()
     await ctx.bot.send_photo(

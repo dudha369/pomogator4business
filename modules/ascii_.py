@@ -67,10 +67,9 @@ async def cmd_ascii(ctx: CommandContext):
         image_bytes = await download_user_avatar(ctx.bot, target.from_user.id)
 
     if not image_bytes:
-        await ctx.reply(ctx.t("ascii.usage"))
+        await ctx.answer(ctx.t("ascii.usage"))
         return
 
     art = image_to_braille(image_bytes, invert=invert, edge=edge)
 
-    await ctx.delete_command_message()
-    await ctx.reply(f"<code>{art}</code>")
+    await ctx.edit_command_message(f"<code>{art}</code>", parse_mode="html")

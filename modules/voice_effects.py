@@ -21,16 +21,16 @@ async def cmd_voice(ctx: CommandContext):
     if effect in ("off", ""):
         await db.set_voice_effect(ctx.connection_id, ctx.chat_id, None)
         await ctx.delete_command_message()
-        await ctx.reply(ctx.t("voice.disabled"))
+        await ctx.answer(ctx.t("voice.disabled"))
         return
 
     if effect not in _FILTERS:
-        await ctx.reply(ctx.t("voice.usage"))
+        await ctx.answer(ctx.t("voice.usage"))
         return
 
     await db.set_voice_effect(ctx.connection_id, ctx.chat_id, effect)
     await ctx.delete_command_message()
-    await ctx.reply(ctx.t("voice.enabled", effect=effect))
+    await ctx.answer(ctx.t("voice.enabled", effect=effect))
 
 
 async def handle_voice_message(bot, connection, message) -> bool:

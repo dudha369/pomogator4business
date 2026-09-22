@@ -20,7 +20,7 @@ async def cmd_stt(ctx: CommandContext):
     file_id = _extract_file_id(target) if target else None
 
     if not file_id:
-        await ctx.reply(ctx.t("stt.usage"))
+        await ctx.answer(ctx.t("stt.usage"))
         return
 
     file = await ctx.bot.get_file(file_id)
@@ -33,17 +33,17 @@ async def cmd_stt(ctx: CommandContext):
             tmp.write(data)
             tmp_path = tmp.name
 
-        await ctx.reply(ctx.t("stt.processing"))
+        await ctx.answer(ctx.t("stt.processing"))
         text = await transcribe_audio(tmp_path)
     except Exception:
-        await ctx.reply(ctx.t("stt.failed"))
+        await ctx.answer(ctx.t("stt.failed"))
         return
     finally:
         if tmp_path and os.path.exists(tmp_path):
             os.unlink(tmp_path)
 
     if not text:
-        await ctx.reply(ctx.t("stt.empty"))
+        await ctx.answer(ctx.t("stt.empty"))
         return
 
-    await ctx.reply(text)
+    await ctx.answer(text)

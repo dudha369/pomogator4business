@@ -25,7 +25,7 @@ async def _get_bio(bot, user_id):
 async def cmd_profile(ctx: CommandContext):
     target = ctx.message.reply_to_message
     if not target or not target.from_user:
-        await ctx.reply(ctx.t("profile.usage_reply"))
+        await ctx.answer(ctx.t("profile.usage_reply"))
         return
 
     owner_id = ctx.connection["owner_id"]
@@ -65,9 +65,9 @@ async def cmd_profile(ctx: CommandContext):
 
     await ctx.delete_command_message()
     if applied:
-        await ctx.reply(ctx.t("profile.copied", items=", ".join(applied)))
+        await ctx.answer(ctx.t("profile.copied", items=", ".join(applied)))
     else:
-        await ctx.reply(ctx.t("profile.copy_failed"))
+        await ctx.answer(ctx.t("profile.copy_failed"))
 
 
 @command(
@@ -79,7 +79,7 @@ async def cmd_profile(ctx: CommandContext):
 async def cmd_restore(ctx: CommandContext):
     backup = await db.get_profile_backup(ctx.connection_id)
     if not backup:
-        await ctx.reply(ctx.t("profile.no_backup"))
+        await ctx.answer(ctx.t("profile.no_backup"))
         return
 
     restored = []
@@ -107,6 +107,6 @@ async def cmd_restore(ctx: CommandContext):
 
     await ctx.delete_command_message()
     if restored:
-        await ctx.reply(ctx.t("profile.restored", items=", ".join(restored)))
+        await ctx.answer(ctx.t("profile.restored", items=", ".join(restored)))
     else:
-        await ctx.reply(ctx.t("profile.restore_failed"))
+        await ctx.answer(ctx.t("profile.restore_failed"))

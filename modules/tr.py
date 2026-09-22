@@ -10,7 +10,7 @@ from core.registry import command
 async def cmd_tr(ctx: CommandContext):
     parts = ctx.args.split(maxsplit=1)
     if len(parts) < 2:
-        await ctx.reply(ctx.t("tr.usage"))
+        await ctx.answer(ctx.t("tr.usage"))
         return
 
     lang, text = parts
@@ -20,8 +20,9 @@ async def cmd_tr(ctx: CommandContext):
         translated = await asyncio.to_thread(
             lambda: GoogleTranslator(source="auto", target=lang.lower()).translate(text)
         )
-    except Exception:
-        await ctx.reply(ctx.t("tr.failed"))
+    except Exception as _ex:
+        print(_ex)
+        await ctx.answer(ctx.t("tr.failed"))
         return
 
-    await ctx.reply(translated)
+    await ctx.answer(translated)

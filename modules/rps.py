@@ -33,7 +33,7 @@ def _keyboard():
 )
 async def cmd_rps(ctx):
     await ctx.delete_command_message()
-    await ctx.reply(t("rps.prompt", ctx.locale), reply_markup=_keyboard())
+    await ctx.answer(t("rps.prompt", ctx.locale), reply_markup=_keyboard())
 
 
 @router.callback_query(F.data.startswith("rps:"))

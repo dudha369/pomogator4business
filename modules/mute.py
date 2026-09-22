@@ -15,21 +15,21 @@ async def cmd_mute(ctx: CommandContext):
         await ctx.delete_command_message()
         if existing:
             await db.clear_mute(ctx.connection_id, ctx.chat_id)
-            await ctx.reply(ctx.t("mute.disabled"))
+            await ctx.answer(ctx.t("mute.disabled"))
         else:
             await db.set_timed_mute(ctx.connection_id, ctx.chat_id, until=None)
-            await ctx.reply(ctx.t("mute.enabled_forever"))
+            await ctx.answer(ctx.t("mute.enabled_forever"))
         return
 
     seconds = parse_duration(args)
     if seconds is None or seconds <= 0:
-        await ctx.reply(ctx.t("mute.usage"))
+        await ctx.answer(ctx.t("mute.usage"))
         return
 
     until = int(time.time()) + seconds
     await db.set_timed_mute(ctx.connection_id, ctx.chat_id, until=until)
     await ctx.delete_command_message()
-    await ctx.reply(ctx.t("mute.enabled_for", time=args))
+    await ctx.answer(ctx.t("mute.enabled_for", time=args))
 
 
 @command(name="wmute", module="mute", description="Мутит после N сообщений собеседника")
@@ -39,11 +39,11 @@ async def cmd_wmute(ctx: CommandContext):
     if not args:
         await db.clear_mute(ctx.connection_id, ctx.chat_id)
         await ctx.delete_command_message()
-        await ctx.reply(ctx.t("wmute.disabled"))
+        await ctx.answer(ctx.t("wmute.disabled"))
         return
 
     if not args[0].isdigit():
-        await ctx.reply(ctx.t("wmute.usage"))
+        await ctx.answer(ctx.t("wmute.usage"))
         return
 
     warn_limit = int(args[0])
@@ -51,12 +51,12 @@ async def cmd_wmute(ctx: CommandContext):
     if len(args) > 1:
         warn_duration = parse_duration(args[1])
         if warn_duration is None:
-            await ctx.reply(ctx.t("wmute.invalid_time"))
+            await ctx.answer(ctx.t("wmute.invalid_time"))
             return
 
     await db.set_warn_mute(ctx.connection_id, ctx.chat_id, warn_limit, warn_duration)
     await ctx.delete_command_message()
-    await ctx.reply(ctx.t("wmute.enabled_after", count=warn_limit))
+    await ctx.answer(ctx.t("wmute.enabled_after", count=warn_limit))
 
 
 async def handle_incoming(bot, connection, message) -> bool:

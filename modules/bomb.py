@@ -31,7 +31,7 @@ async def cmd_bomb(ctx: CommandContext):
         raw_time = ctx.args.strip().split()[0] if ctx.args.strip() else ""
         seconds = parse_duration_loose(raw_time)
         if seconds is None or seconds <= 0 or seconds > _MAX_SECONDS:
-            await ctx.reply(ctx.t("bomb.usage_reply"))
+            await ctx.answer(ctx.t("bomb.usage_reply"))
             return
 
         await ctx.delete_command_message()
@@ -42,16 +42,16 @@ async def cmd_bomb(ctx: CommandContext):
 
     parts = ctx.args.split(maxsplit=1)
     if len(parts) < 2:
-        await ctx.reply(ctx.t("bomb.usage_full"))
+        await ctx.answer(ctx.t("bomb.usage_full"))
         return
 
     raw_time, text = parts
     seconds = parse_duration_loose(raw_time)
     if seconds is None or seconds <= 0 or seconds > _MAX_SECONDS:
-        await ctx.reply(ctx.t("bomb.invalid_time"))
+        await ctx.answer(ctx.t("bomb.invalid_time"))
         return
 
     await ctx.delete_command_message()
-    sent = await ctx.reply(text)
+    sent = await ctx.answer(text)
 
     asyncio.create_task(_explode(ctx.bot, ctx.connection_id, sent.message_id, seconds))

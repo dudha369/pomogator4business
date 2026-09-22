@@ -132,7 +132,7 @@ async def cmd_wanted(ctx: CommandContext):
         name = target.from_user.full_name.upper()
 
     if not image_bytes:
-        await ctx.reply(ctx.t("wanted.usage"))
+        await ctx.answer(ctx.t("wanted.usage"))
         return
 
     result = render_wanted(image_bytes, name, charge.upper())

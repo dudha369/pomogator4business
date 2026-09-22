@@ -12,7 +12,7 @@ async def cmd_poll(ctx: CommandContext):
     parts = [p.strip() for p in raw.split("|") if p.strip()]
 
     if len(parts) < 3:
-        await ctx.reply(ctx.t("poll.usage"))
+        await ctx.answer(ctx.t("poll.usage"))
         return
 
     question = parts[0]

@@ -21,7 +21,7 @@ async def cmd_guess(ctx):
             await db.save_guess_game(
                 ctx.connection_id, ctx.chat_id, status="finished", attempts=attempts
             )
-            await ctx.reply(
+            await ctx.answer(
                 t("guess.correct", ctx.locale, secret=secret, attempts=attempts)
             )
             return
@@ -32,7 +32,7 @@ async def cmd_guess(ctx):
             if number < secret
             else t("guess.lower", ctx.locale)
         )
-        await ctx.reply(hint)
+        await ctx.answer(hint)
         return
 
     max_value = int(raw) if raw.isdigit() and int(raw) >= 2 else _DEFAULT_MAX
@@ -46,4 +46,4 @@ async def cmd_guess(ctx):
         attempts=0,
         status="active",
     )
-    await ctx.reply(t("guess.started", ctx.locale, max=max_value))
+    await ctx.answer(t("guess.started", ctx.locale, max=max_value))

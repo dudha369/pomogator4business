@@ -73,7 +73,7 @@ async def cmd_word(ctx):
     if raw:
         secret = "".join(ch for ch in raw if ch.isalpha())
         if len(secret) < 3:
-            await ctx.reply(t("wordle.invalid_word", ctx.locale))
+            await ctx.answer(t("wordle.invalid_word", ctx.locale))
             return
     else:
         secret = random.choice(WORDS)
@@ -90,7 +90,7 @@ async def cmd_word(ctx):
 
     text = _render_board(ctx.locale, len(secret), [], "active", secret)
     await ctx.delete_command_message()
-    sent = await ctx.reply(text)
+    sent = await ctx.answer(text)
     await db.save_wordle_game(
         ctx.connection_id, ctx.chat_id, message_id=sent.message_id
     )

@@ -56,7 +56,7 @@ async def _start(ctx, secret):
     text = _render(ctx.locale, game)
 
     await ctx.delete_command_message()
-    sent = await ctx.reply(text)
+    sent = await ctx.answer(text)
     await db.save_hangman_game(
         ctx.connection_id, ctx.chat_id, message_id=sent.message_id
     )
@@ -65,7 +65,7 @@ async def _start(ctx, secret):
 async def _handle_guess(ctx, game, letter):
     guessed = json.loads(game["guessed_letters"])
     if letter in guessed:
-        await ctx.reply(ctx.t("hangman.already_guessed"))
+        await ctx.answer(ctx.t("hangman.already_guessed"))
         return
 
     guessed.append(letter)
@@ -103,7 +103,7 @@ async def _handle_guess(ctx, game, letter):
         except Exception:
             pass
 
-    sent = await ctx.reply(text)
+    sent = await ctx.answer(text)
     await db.save_hangman_game(
         ctx.connection_id, ctx.chat_id, message_id=sent.message_id
     )
@@ -121,7 +121,7 @@ async def cmd_hangman(ctx):
     if raw and len(raw) > 1:
         secret = "".join(ch for ch in raw.upper() if ch.isalpha())
         if len(secret) < 3:
-            await ctx.reply(ctx.t("hangman.invalid_word"))
+            await ctx.answer(ctx.t("hangman.invalid_word"))
             return
     else:
         secret = random.choice(WORDS)

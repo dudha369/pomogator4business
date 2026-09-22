@@ -18,7 +18,7 @@ def render_qr(text):
 async def cmd_qr(ctx: CommandContext):
     text = ctx.args.strip()
     if not text:
-        await ctx.reply(ctx.t("qr.usage"))
+        await ctx.answer(ctx.t("qr.usage"))
         return
 
     result = render_qr(text)

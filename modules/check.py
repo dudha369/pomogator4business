@@ -88,25 +88,25 @@ def _format_report(ctx, stats, sha256):
 @command(name="check", module="check", description="Проверяет файл в VirusTotal")
 async def cmd_check(ctx: CommandContext):
     if not VT_API_KEY:
-        await ctx.reply(ctx.t("check.not_configured"))
+        await ctx.answer(ctx.t("check.not_configured"))
         return
 
     target = ctx.message.reply_to_message
     if not target:
-        await ctx.reply(ctx.t("check.usage"))
+        await ctx.answer(ctx.t("check.usage"))
         return
 
     extracted = _extract_file(target)
     if not extracted:
-        await ctx.reply(ctx.t("check.no_file"))
+        await ctx.answer(ctx.t("check.no_file"))
         return
 
     file_id, file_size, filename = extracted
     if file_size and file_size > _MAX_SIZE:
-        await ctx.reply(ctx.t("check.too_large"))
+        await ctx.answer(ctx.t("check.too_large"))
         return
 
-    await ctx.reply(ctx.t("check.scanning"))
+    await ctx.answer(ctx.t("check.scanning"))
 
     data = await _download(ctx.bot, file_id)
     sha256 = hashlib.sha256(data).hexdigest()
@@ -118,12 +118,12 @@ async def cmd_check(ctx: CommandContext):
             analysis_id = await _upload_file(session, data, filename)
             analysis = await _wait_for_analysis(session, analysis_id)
             if not analysis:
-                await ctx.reply(ctx.t("check.timeout"))
+                await ctx.answer(ctx.t("check.timeout"))
                 return
             report = await _get_report(session, sha256)
             if not report:
-                await ctx.reply(ctx.t("check.no_report"))
+                await ctx.answer(ctx.t("check.no_report"))
                 return
 
     stats = report["data"]["attributes"]["last_analysis_stats"]
-    await ctx.reply(_format_report(ctx, stats, sha256))
+    await ctx.answer(_format_report(ctx, stats, sha256))

@@ -176,7 +176,7 @@ async def cmd_2048(ctx):
     keyboard = _keyboard(board, False)
 
     await ctx.delete_command_message()
-    sent = await ctx.reply(text, reply_markup=keyboard)
+    sent = await ctx.answer(text, reply_markup=keyboard)
     await db.save_g2048_game(ctx.connection_id, ctx.chat_id, message_id=sent.message_id)
 
 
