@@ -41,7 +41,9 @@ async def cmd_text(ctx: CommandContext):
     text = ctx.args.strip()
 
     if not photo_source or not photo_source.photo or not text:
-        await ctx.bot.send_message(chat_id=ctx.connection["owner_chat_id"], text=ctx.t("text.usage"))
+        await ctx.bot.send_message(
+            chat_id=ctx.connection["owner_chat_id"], text=ctx.t("text.usage")
+        )
         return
 
     image_bytes = await download_message_photo(ctx.bot, photo_source)

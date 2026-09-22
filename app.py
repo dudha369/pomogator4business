@@ -2,48 +2,19 @@ import asyncio
 import logging
 from contextlib import asynccontextmanager
 
-from aiogram import Bot, Dispatcher
-from aiogram.client.default import DefaultBotProperties
-from aiogram.enums import ParseMode
-from aiogram.fsm.storage.memory import MemoryStorage
 from fastapi import FastAPI, Header, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+from tortoise import Tortoise
 
 from api.routes import router as api_router
-from config import (
-    BOT_TOKEN,
-    CORS_ORIGINS,
-    WEBHOOK_PATH,
-    WEBHOOK_SECRET,
-    WEBHOOK_URL,
-    API_HOST,
-    API_PORT,
-)
-from core.database import init_db
+from bot_instance import bot, dp
+from config import CORS_ORIGINS, TORTOISE_ORM, WEBHOOK_PATH, WEBHOOK_SECRET, WEBHOOK_URL
 from core.loader import load_modules
 from core.mirror_manager import mirror_manager
 from core.scheduler import run as run_story_scheduler
 from core.scheduler import run_emoji_clock
-from handlers.business_messages import router as business_messages_router
-from handlers.connection import router as connection_router
-from handlers.emoji_status import router as emoji_status_router
-from handlers.games import router as games_router
-from handlers.mirror import router as mirror_router
-from handlers.settings import router as settings_router
-from modules.archive import router as archive_router
 
-bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
-dp = Dispatcher(storage=MemoryStorage())
-
-dp.include_router(connection_router)
-dp.include_router(business_messages_router)
-dp.include_router(archive_router)
-dp.include_router(mirror_router)
-dp.include_router(emoji_status_router)
-dp.include_router(games_router)
-dp.include_router(settings_router)
-
-_background_tasks = []
+_background_tasks: list[asyncio.Task] = []
 
 
 @asynccontextmanager
@@ -51,7 +22,7 @@ async def lifespan(app: FastAPI):
     logging.basicConfig(level=logging.INFO)
 
     load_modules()
-    await init_db()
+    await Tortoise.init(config=TORTOISE_ORM)
 
     if WEBHOOK_URL:
         await bot.set_webhook(
@@ -78,6 +49,7 @@ async def lifespan(app: FastAPI):
 
     await mirror_manager.stop_all()
     await bot.session.close()
+    await Tortoise.close_connections()
 
 
 app = FastAPI(lifespan=lifespan)
@@ -109,9 +81,3 @@ async def telegram_webhook(
 @app.get("/health")
 async def health():
     return {"status": "ok"}
-
-
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(app, host=API_HOST, port=API_PORT)

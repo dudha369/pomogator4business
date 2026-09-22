@@ -1,48 +1,99 @@
-import os
-import secrets
+import hashlib
+from pathlib import Path
 
-from dotenv import load_dotenv
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
-load_dotenv()
+ROOT_DIR = Path(__file__).parent.absolute()
 
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-if not BOT_TOKEN:
-    raise RuntimeError("BOT_TOKEN не задан в .env")
 
-DB_PATH = os.getenv("DB_PATH", "bot.db")
-DEFAULT_PREFIX = "."
-VT_API_KEY = os.getenv("VT_API_KEY")
+class Settings(BaseSettings):
+    BOT_TOKEN: str
+    DB_URL: str
 
-WEBAPP_URL = os.getenv("WEBAPP_URL")
-WHISPER_MODEL_SIZE = os.getenv("WHISPER_MODEL_SIZE", "base")
+    WEBAPP_URL: str = ""
+    VT_API_KEY: str = ""
+    WHISPER_MODEL_SIZE: str = "base"
+    DEFAULT_PREFIX: str = "."
 
-WEBHOOK_PATH = os.getenv("WEBHOOK_PATH", "/webhook")
-WEBHOOK_BASE_URL = os.getenv("WEBHOOK_BASE_URL")
+    WEBHOOK_PATH: str = "/webhook"
+    WEBHOOK_BASE_URL: str = ""
+    WEBHOOK_SECRET: str = ""
+
+    API_HOST: str = "0.0.0.0"
+    API_PORT: int = 8000
+
+    CORS_ORIGINS_RAW: str = Field(default="", alias="CORS_ORIGINS")
+
+    model_config = SettingsConfigDict(
+        env_file=ROOT_DIR / ".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+        populate_by_name=True,
+    )
+
+
+def _derive_webhook_secret(bot_token: str) -> str:
+    """Детерминированный secret_token для вебхука Telegram.
+
+    Не храним ни в файле, ни в отдельной обязательной env-переменной —
+    выводим из BOT_TOKEN, который и так есть. На эфемерной ФС (Render и
+    подобные) это переживает рестарты/редеплои без ручной синхронизации
+    секретов. Если BOT_TOKEN меняется — secret просто пересчитается и
+    перерегистрируется на следующем старте (безопасно, в отличие от
+    MIRROR_ENCRYPTION_KEY, см. core/crypto.py).
+    """
+    digest = hashlib.sha256(f"pomogator4business-webhook:{bot_token}".encode())
+    return digest.hexdigest()
+
+
+settings = Settings()
+
+BOT_TOKEN = settings.BOT_TOKEN
+DB_URL = settings.DB_URL
+
+WEBAPP_URL = settings.WEBAPP_URL
+VT_API_KEY = settings.VT_API_KEY
+WHISPER_MODEL_SIZE = settings.WHISPER_MODEL_SIZE
+DEFAULT_PREFIX = settings.DEFAULT_PREFIX
+
+WEBHOOK_PATH = settings.WEBHOOK_PATH
+WEBHOOK_BASE_URL = settings.WEBHOOK_BASE_URL
 WEBHOOK_URL = f"{WEBHOOK_BASE_URL}{WEBHOOK_PATH}" if WEBHOOK_BASE_URL else None
+WEBHOOK_SECRET = settings.WEBHOOK_SECRET or _derive_webhook_secret(BOT_TOKEN)
 
-_SECRET_FILE = "webhook.secret"
-
-
-def _load_webhook_secret():
-    env_secret = os.getenv("WEBHOOK_SECRET")
-    if env_secret:
-        return env_secret
-    if os.path.exists(_SECRET_FILE):
-        with open(_SECRET_FILE, "r") as f:
-            return f.read().strip()
-    secret = secrets.token_urlsafe(32)
-    with open(_SECRET_FILE, "w") as f:
-        f.write(secret)
-    return secret
-
-
-WEBHOOK_SECRET = _load_webhook_secret()
-
-API_HOST = os.getenv("API_HOST", "0.0.0.0")
-API_PORT = int(os.getenv("API_PORT", "8000"))
+API_HOST = settings.API_HOST
+API_PORT = settings.API_PORT
 
 CORS_ORIGINS = [
-    origin.strip()
-    for origin in os.getenv("CORS_ORIGINS", "").split(",")
-    if origin.strip()
+    origin.strip() for origin in settings.CORS_ORIGINS_RAW.split(",") if origin.strip()
 ]
+
+# --- Tortoise ORM / Aerich ---
+TORTOISE_ORM = {
+    "connections": {"default": DB_URL},
+    "apps": {
+        "models": {
+            "models": [
+                "db.models.connection",
+                "db.models.module_settings",
+                "db.models.echo",
+                "db.models.message_log",
+                "db.models.mute",
+                "db.models.story",
+                "db.models.known_chat",
+                "db.models.message_history",
+                "db.models.archive_log",
+                "db.models.profile_backup",
+                "db.models.mirror_bot",
+                "db.models.clock",
+                "db.models.emoji_status",
+                "db.models.user_locale",
+                "db.models.voice_effect",
+                "db.models.games",
+                "aerich.models",
+            ],
+            "default_connection": "default",
+        }
+    },
+}
