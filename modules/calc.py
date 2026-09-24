@@ -56,16 +56,16 @@ def safe_eval(expression):
 async def cmd_calc(ctx: CommandContext):
     expression = ctx.args.strip()
     if not expression:
-        await ctx.answer(ctx.t("calc.usage"))
+        await ctx.usage_error(ctx.t("calc.usage"))
         return
 
     try:
         result = safe_eval(expression)
     except (CalcError, SyntaxError, ZeroDivisionError, OverflowError, ValueError):
-        await ctx.answer(ctx.t("calc.error"))
+        await ctx.reply(ctx.t("calc.error"))
         return
 
     if isinstance(result, float) and result.is_integer():
         result = int(result)
 
-    await ctx.answer(f"{expression} = {result}")
+    await ctx.reply(f"{expression} = {result}")

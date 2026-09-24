@@ -12,7 +12,7 @@ async def cmd_flip(ctx: CommandContext):
         parse_mode="HTML",
     )
 
-    await asyncio.sleep(1.8)
+    await asyncio.sleep(1.5)
 
     result = random.choice(["ОРЁЛ", "РЕШКА"])
 

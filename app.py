@@ -6,10 +6,11 @@ from fastapi import FastAPI, Header, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from tortoise import Tortoise
 
-from api.routes import router as api_router
+from api import setup_routers
 from bot_instance import bot, dp
-from config import CORS_ORIGINS, TORTOISE_ORM, WEBHOOK_PATH, WEBHOOK_SECRET, WEBHOOK_URL
+from config import TORTOISE_ORM, settings
 from core.loader import load_modules
+from core.logging_config import configure_logging
 from core.mirror_manager import mirror_manager
 from core.scheduler import run as run_story_scheduler
 from core.scheduler import run_emoji_clock
@@ -19,15 +20,15 @@ _background_tasks: list[asyncio.Task] = []
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logging.basicConfig(level=logging.INFO)
+    configure_logging()
 
     load_modules()
     await Tortoise.init(config=TORTOISE_ORM, _enable_global_fallback=True)
 
-    if WEBHOOK_URL:
+    if settings.WEBHOOK_URL:
         await bot.set_webhook(
-            url=WEBHOOK_URL,
-            secret_token=WEBHOOK_SECRET,
+            url=settings.WEBHOOK_URL,
+            secret_token=settings.WEBHOOK_SECRET,
             drop_pending_updates=True,
         )
     else:
@@ -54,28 +55,33 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-if CORS_ORIGINS:
+if settings.CORS_ORIGINS:
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=CORS_ORIGINS,
+        allow_origins=settings.CORS_ORIGINS,
         allow_methods=["*"],
         allow_headers=["*"],
     )
 
-app.include_router(api_router, prefix="/api")
+app.include_router(setup_routers(), prefix="/api")
 
 
-@app.post(WEBHOOK_PATH)
+@app.post(settings.WEBHOOK_PATH)
 async def telegram_webhook(
     request: Request,
     x_telegram_bot_api_secret_token: str = Header(default=None),
 ):
-    if x_telegram_bot_api_secret_token != WEBHOOK_SECRET:
+    if x_telegram_bot_api_secret_token != settings.WEBHOOK_SECRET:
         raise HTTPException(status_code=401, detail="Invalid secret token")
 
     data = await request.json()
     await dp.feed_webhook_update(bot, data)
     return Response(status_code=200)
+
+
+@app.get("/")
+async def root():
+    return {"status": "ok"}
 
 
 @app.get("/health")

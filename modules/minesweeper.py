@@ -168,9 +168,10 @@ async def cmd_ms(ctx):
     text = t("ms.settings_title", ctx.locale)
     keyboard = _settings_keyboard(game)
 
-    await ctx.delete_command_message()
-    sent = await ctx.answer(text, reply_markup=keyboard)
-    await db.save_ms_game(ctx.connection_id, ctx.chat_id, message_id=sent.message_id)
+    await ctx.edit_command_message(text, reply_markup=keyboard)
+    await db.save_ms_game(
+        ctx.connection_id, ctx.chat_id, message_id=ctx.message.message_id
+    )
 
 
 @router.callback_query(F.data.startswith("ms:"))

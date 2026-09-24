@@ -4,6 +4,7 @@ import random
 from core import database as db
 from core.i18n import t
 from core.registry import command
+from core.self_actions import delete_own_messages
 from modules.wordle_dictionary import WORDS
 
 _MAX_ATTEMPTS = 6
@@ -73,7 +74,7 @@ async def cmd_word(ctx):
     if raw:
         secret = "".join(ch for ch in raw if ch.isalpha())
         if len(secret) < 3:
-            await ctx.answer(t("wordle.invalid_word", ctx.locale))
+            await ctx.reply(t("wordle.invalid_word", ctx.locale))
             return
     else:
         secret = random.choice(WORDS)
@@ -89,10 +90,9 @@ async def cmd_word(ctx):
     )
 
     text = _render_board(ctx.locale, len(secret), [], "active", secret)
-    await ctx.delete_command_message()
-    sent = await ctx.answer(text)
+    await ctx.edit_command_message(text)
     await db.save_wordle_game(
-        ctx.connection_id, ctx.chat_id, message_id=sent.message_id
+        ctx.connection_id, ctx.chat_id, message_id=ctx.message.message_id
     )
 
 
@@ -125,13 +125,9 @@ async def handle_wordle_guess(bot, connection, message, locale, raw_guess):
 
     text = _render_board(locale, len(secret), guesses, status, secret)
 
-    try:
-        await bot.delete_business_messages(
-            business_connection_id=connection["connection_id"],
-            message_ids=[message.message_id],
-        )
-    except Exception:
-        pass
+    await delete_own_messages(
+        bot, connection["connection_id"], message.chat.id, [message.message_id]
+    )
 
     try:
         if game["message_id"]:

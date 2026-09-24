@@ -10,15 +10,17 @@ _COMPLIMENT_COUNT = 10
 
 @command(name="roast", module="roast", description="Генерирует дружеский подкол")
 async def cmd_roast(ctx: CommandContext):
-    await ctx.delete_command_message()
     index = random.randint(1, _ROAST_COUNT)
     text = ctx.t(f"roast.line_{index}")
-    await typewriter(ctx.bot, ctx.connection, ctx.chat_id, text, "▌")
+    await typewriter(
+        ctx.bot, ctx.connection, ctx.chat_id, text, "▌", ctx.message.message_id
+    )
 
 
 @command(name="compliment", module="compliment", description="Генерирует комплимент")
 async def cmd_compliment(ctx: CommandContext):
-    await ctx.delete_command_message()
     index = random.randint(1, _COMPLIMENT_COUNT)
     text = ctx.t(f"compliment.line_{index}")
-    await typewriter(ctx.bot, ctx.connection, ctx.chat_id, text, "▌")
+    await typewriter(
+        ctx.bot, ctx.connection, ctx.chat_id, text, "▌", ctx.message.message_id
+    )

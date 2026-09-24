@@ -14,3 +14,26 @@ class ArchiveLog(Model):
 
     class Meta:
         table = "archive_log"
+
+
+async def log_archive_event(
+    connection_id, chat_id, message_id, event, old_text, new_text, created_at
+):
+    await ArchiveLog.create(
+        connection_id=connection_id,
+        chat_id=chat_id,
+        message_id=message_id,
+        event=event,
+        old_text=old_text,
+        new_text=new_text,
+        created_at=created_at,
+    )
+
+
+async def get_recent_archive(connection_id, limit):
+    return (
+        await ArchiveLog.filter(connection_id=connection_id)
+        .order_by("-log_id")
+        .limit(limit)
+        .values()
+    )

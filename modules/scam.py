@@ -75,14 +75,14 @@ async def handle_new_contact(bot, connection, message: Message):
         return
 
     chat_id = message.chat.id
-    connection_id = connection["connection_id"]
+    owner_id = connection["owner_id"]
 
-    if await db.is_known_chat(connection_id, chat_id):
+    if await db.is_known_chat(owner_id, chat_id):
         return
 
-    await db.mark_known_chat(connection_id, chat_id)
+    await db.mark_known_chat(owner_id, chat_id)
 
-    locale = await db.get_locale(connection["owner_id"])
+    locale = await db.get_locale(owner_id)
     results = await _run_checks(user.id, locale)
     text = _format_profile(locale, user) + "\n\n" + _format_checks(locale, results)
 

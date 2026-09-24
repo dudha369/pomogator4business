@@ -32,14 +32,27 @@ def _build_steps(text: str):
     return [text[:i] for i in cut_points]
 
 
-async def typewriter(bot, connection, chat_id, text, cursor):
+async def typewriter(bot, connection, chat_id, text, cursor, message_id=None):
     steps = _build_steps(text)
 
-    sent = await bot.send_message(
-        business_connection_id=connection["connection_id"],
-        chat_id=chat_id,
-        text=cursor,
-    )
+    if message_id is None:
+        sent = await bot.send_message(
+            business_connection_id=connection["connection_id"],
+            chat_id=chat_id,
+            text=cursor,
+        )
+        message_id = sent.message_id
+        await db.log_message(connection["connection_id"], chat_id, message_id)
+    else:
+        try:
+            await bot.edit_message_text(
+                business_connection_id=connection["connection_id"],
+                chat_id=chat_id,
+                message_id=message_id,
+                text=cursor,
+            )
+        except Exception:
+            pass
 
     for step_text in steps:
         await asyncio.sleep(_STEP_DELAY)
@@ -47,7 +60,7 @@ async def typewriter(bot, connection, chat_id, text, cursor):
             await bot.edit_message_text(
                 business_connection_id=connection["connection_id"],
                 chat_id=chat_id,
-                message_id=sent.message_id,
+                message_id=message_id,
                 text=step_text + cursor,
             )
         except Exception:
@@ -57,13 +70,11 @@ async def typewriter(bot, connection, chat_id, text, cursor):
         await bot.edit_message_text(
             business_connection_id=connection["connection_id"],
             chat_id=chat_id,
-            message_id=sent.message_id,
+            message_id=message_id,
             text=text,
         )
     except Exception:
         pass
-
-    await db.log_message(connection["connection_id"], chat_id, sent.message_id)
 
 
 async def handle_type_trigger(bot, message, connection, trigger):
@@ -76,15 +87,7 @@ async def handle_type_trigger(bot, message, connection, trigger):
 
     cursor = _CURSORS.get(trigger, _DEFAULT_CURSOR)
 
-    try:
-        await bot.delete_business_messages(
-            business_connection_id=connection["connection_id"],
-            message_ids=[message.message_id],
-        )
-    except Exception:
-        pass
-
-    await typewriter(bot, connection, message.chat.id, text, cursor)
+    await typewriter(bot, connection, message.chat.id, text, cursor, message.message_id)
 
 
 @command(name="type", module="type", description="Печатает текст с анимацией")
@@ -92,5 +95,11 @@ async def cmd_type(ctx: CommandContext):
     if not ctx.args:
         return
 
-    await ctx.delete_command_message()
-    await typewriter(ctx.bot, ctx.connection, ctx.chat_id, ctx.args, _DEFAULT_CURSOR)
+    await typewriter(
+        ctx.bot,
+        ctx.connection,
+        ctx.chat_id,
+        ctx.args,
+        _DEFAULT_CURSOR,
+        ctx.message.message_id,
+    )

@@ -40,18 +40,18 @@ async def _keep_action(bot, connection_id, chat_id, action, seconds):
 async def cmd_typing(ctx: CommandContext):
     parts = ctx.args.split()
     if not parts:
-        await ctx.answer(ctx.t("typing.usage"))
+        await ctx.usage_error(ctx.t("typing.usage"))
         return
 
     seconds = parse_duration(parts[0])
     if seconds is None or seconds <= 0 or seconds > _MAX_SECONDS:
-        await ctx.answer(ctx.t("typing.invalid_time"))
+        await ctx.reply(ctx.t("typing.invalid_time"))
         return
 
     action_key = parts[1].lower() if len(parts) > 1 else "typing"
     action = _ACTIONS.get(action_key)
     if not action:
-        await ctx.answer(ctx.t("typing.unknown_action"))
+        await ctx.reply(ctx.t("typing.unknown_action"))
         return
 
     await ctx.delete_command_message()

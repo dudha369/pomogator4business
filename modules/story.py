@@ -62,7 +62,7 @@ async def _post_all(bot, connection_id, tiles):
 async def cmd_story(ctx: CommandContext):
     target = ctx.message.reply_to_message
     if not target or not target.photo:
-        await ctx.answer(ctx.t("story.usage_reply"))
+        await ctx.usage_error(ctx.t("story.usage_reply"))
         return
 
     raw_parts = ctx.args.strip()
@@ -77,11 +77,11 @@ async def cmd_story(ctx: CommandContext):
 
     if await db.is_autopost_enabled(ctx.connection_id):
         await db.queue_story_tiles(ctx.connection_id, tiles)
-        await ctx.answer(ctx.t("story.queued", parts=parts))
+        await ctx.edit_command_message(ctx.t("story.queued", parts=parts))
         return
 
     await _post_all(ctx.bot, ctx.connection_id, tiles)
-    await ctx.answer(ctx.t("story.published", parts=parts))
+    await ctx.edit_command_message(ctx.t("story.published", parts=parts))
 
 
 @command(
@@ -91,9 +91,8 @@ async def cmd_story(ctx: CommandContext):
 )
 async def cmd_storyautopost(ctx: CommandContext):
     enabled = await db.toggle_autopost(ctx.connection_id)
-    await ctx.delete_command_message()
     status = ctx.t("story.status_on") if enabled else ctx.t("story.status_off")
-    await ctx.answer(ctx.t("story.autopost_toggled", status=status))
+    await ctx.edit_command_message(ctx.t("story.autopost_toggled", status=status))
 
 
 async def autopost_tick(bot, today: str):

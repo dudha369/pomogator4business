@@ -130,7 +130,7 @@ def _keyboard(board, finished):
         row_buttons = []
         for c in range(_SIZE):
             v = board[r * _SIZE + c]
-            text = str(v) if v else "·"
+            text = str(v) if v else "⠀"
             row_buttons.append(
                 InlineKeyboardButton(text=text, callback_data="g2048:noop")
             )
@@ -175,9 +175,10 @@ async def cmd_2048(ctx):
     text = _text(ctx.locale, 0, "active")
     keyboard = _keyboard(board, False)
 
-    await ctx.delete_command_message()
-    sent = await ctx.answer(text, reply_markup=keyboard)
-    await db.save_g2048_game(ctx.connection_id, ctx.chat_id, message_id=sent.message_id)
+    await ctx.edit_command_message(text, reply_markup=keyboard)
+    await db.save_g2048_game(
+        ctx.connection_id, ctx.chat_id, message_id=ctx.message.message_id
+    )
 
 
 @router.callback_query(F.data.startswith("g2048:"))

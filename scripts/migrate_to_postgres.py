@@ -110,10 +110,42 @@ async def migrate_simple(conn, table, model, mapper):
     print(f"{table}: {len(objs)}")
 
 
+async def _connection_owner_map(conn) -> dict:
+    """connection_id -> owner_id по СТАРОЙ (sqlite) таблице connections.
+
+    Нужно для known_chats: там раньше "известность" собеседника была
+    привязана к connection_id, теперь — к owner_id (см.
+    db/models/known_chat.py)."""
+    if not await _table_exists(conn, "connections"):
+        return {}
+    rows = await _fetch_all(conn, "connections")
+    return {row["connection_id"]: row["owner_id"] for row in rows}
+
+
+async def migrate_known_chats(conn, connection_owner: dict):
+    if not await _table_exists(conn, "known_chats"):
+        return
+    rows = await _fetch_all(conn, "known_chats")
+    seen = set()
+    objs = []
+    for row in rows:
+        owner_id = connection_owner.get(row["connection_id"])
+        if owner_id is None:
+            continue
+        key = (owner_id, row["chat_id"])
+        if key in seen:
+            continue
+        seen.add(key)
+        objs.append(KnownChat(owner_id=owner_id, chat_id=row["chat_id"]))
+    if objs:
+        await KnownChat.bulk_create(objs)
+    print(f"known_chats: {len(objs)}")
+
+
 async def main():
     db_path = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_DB_PATH
 
-    await Tortoise.init(config=TORTOISE_ORM)
+    await Tortoise.init(config=TORTOISE_ORM, _enable_global_fallback=True)
 
     async with aiosqlite.connect(db_path) as conn:
         await migrate_connections(conn)
@@ -174,12 +206,8 @@ async def main():
                 connection_id=r["connection_id"], tile_data=r["tile_data"]
             ),
         )
-        await migrate_simple(
-            conn,
-            "known_chats",
-            KnownChat,
-            lambda r: KnownChat(connection_id=r["connection_id"], chat_id=r["chat_id"]),
-        )
+        connection_owner = await _connection_owner_map(conn)
+        await migrate_known_chats(conn, connection_owner)
         await migrate_simple(
             conn,
             "message_history",

@@ -21,6 +21,7 @@ _JOKES = [
     description="Отправляет случайную шутку",
 )
 async def cmd_joke(ctx: CommandContext):
-    await ctx.delete_command_message()
     joke = random.choice(_JOKES)
-    await typewriter(ctx.bot, ctx.connection, ctx.chat_id, joke, "▌")
+    await typewriter(
+        ctx.bot, ctx.connection, ctx.chat_id, joke, "▌", ctx.message.message_id
+    )

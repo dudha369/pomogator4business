@@ -83,5 +83,4 @@ async def cmd_sw(ctx: CommandContext):
 
     converted = switch_layout(original)
 
-    await ctx.delete_command_message()
-    await ctx.answer(converted)
+    await ctx.edit_command_message(converted)

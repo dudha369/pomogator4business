@@ -10,3 +10,18 @@ class DisabledModule(Model):
     class Meta:
         table = "disabled_modules"
         unique_together = (("connection_id", "module"),)
+
+
+async def disable_module(connection_id, module):
+    await DisabledModule.get_or_create(connection_id=connection_id, module=module)
+
+
+async def enable_module(connection_id, module):
+    await DisabledModule.filter(connection_id=connection_id, module=module).delete()
+
+
+async def list_disabled_modules(connection_id):
+    modules = await DisabledModule.filter(connection_id=connection_id).values_list(
+        "module", flat=True
+    )
+    return set(modules)

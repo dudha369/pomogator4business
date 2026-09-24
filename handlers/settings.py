@@ -12,6 +12,7 @@ from aiogram.types import (
 from core import database as db
 from core.i18n import LANGUAGE_NAMES, t
 from core.registry import registry
+from core.webapp import webapp_keyboard
 
 router = Router(name="settings")
 
@@ -56,6 +57,15 @@ def _language_keyboard():
 @router.message(Command("start"))
 async def cmd_start(message: Message):
     locale = await db.get_locale(message.from_user.id)
+    connection = await db.get_connection_by_owner(message.from_user.id)
+
+    if connection and connection["is_enabled"]:
+        await message.answer(
+            t("start.greeting_connected", locale),
+            reply_markup=webapp_keyboard(t("connection.open_app_button", locale)),
+        )
+        return
+
     await message.answer(t("start.greeting", locale))
 
 

@@ -92,7 +92,7 @@ async def cmd_dem(ctx: CommandContext):
     photo_source = target if target and target.photo else ctx.message
 
     if not photo_source or not photo_source.photo:
-        await ctx.answer(ctx.t("dem.usage_reply"))
+        await ctx.usage_error(ctx.t("dem.usage_reply"))
         return
 
     raw = ctx.args.strip()
@@ -102,7 +102,7 @@ async def cmd_dem(ctx: CommandContext):
         title, subtitle = raw, ""
 
     if not title:
-        await ctx.answer(ctx.t("dem.usage_format"))
+        await ctx.usage_error(ctx.t("dem.usage_format"))
         return
 
     image_bytes = await download_message_photo(ctx.bot, photo_source)

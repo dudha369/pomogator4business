@@ -5,6 +5,7 @@ from aiogram.types import Message
 
 from core import database as db
 from core.i18n import t
+from core.self_actions import delete_own_messages
 
 
 @dataclass
@@ -26,7 +27,7 @@ class CommandContext:
     def t(self, key, **kwargs):
         return t(key, self.locale, **kwargs)
 
-    async def answer(self, text: str, **kwargs):
+    async def reply(self, text: str, **kwargs):
         msg = await self.bot.send_message(
             business_connection_id=self.connection_id,
             chat_id=self.chat_id,
@@ -37,13 +38,9 @@ class CommandContext:
         return msg
 
     async def delete_command_message(self):
-        try:
-            await self.bot.delete_business_messages(
-                business_connection_id=self.connection_id,
-                message_ids=[self.message.message_id],
-            )
-        except Exception:
-            pass
+        await delete_own_messages(
+            self.bot, self.connection_id, self.chat_id, [self.message.message_id]
+        )
 
     async def edit_command_message(self, text: str, **kwargs):
         try:
@@ -51,6 +48,17 @@ class CommandContext:
                 business_connection_id=self.connection_id,
                 chat_id=self.chat_id,
                 message_id=self.message.message_id,
+                text=text,
+                **kwargs,
+            )
+        except Exception:
+            pass
+
+    async def usage_error(self, text: str, **kwargs):
+        await self.delete_command_message()
+        try:
+            await self.bot.send_message(
+                chat_id=self.connection["owner_chat_id"],
                 text=text,
                 **kwargs,
             )

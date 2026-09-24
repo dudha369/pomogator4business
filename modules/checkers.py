@@ -13,12 +13,12 @@ _DIRECTIONS_WHITE = [(-1, -1), (-1, 1)]
 _DIRECTIONS_BLACK = [(1, -1), (1, 1)]
 
 _SYMBOLS = {
-    ".": "·",
-    " ": " ",
+    ".": "⠀",
+    " ": "⠀",
     "w": "⚪",
-    "W": "⚪👑",
+    "W": "🤍",
     "b": "⚫",
-    "B": "⚫👑",
+    "B": "🖤",
 }
 
 
@@ -174,9 +174,10 @@ async def cmd_chk(ctx):
     text = _build_text(ctx.locale, game, None)
     keyboard = _build_keyboard(game["board"], None)
 
-    await ctx.delete_command_message()
-    sent = await ctx.answer(text, reply_markup=keyboard)
-    await db.save_chk_game(ctx.connection_id, ctx.chat_id, message_id=sent.message_id)
+    await ctx.edit_command_message(text, reply_markup=keyboard)
+    await db.save_chk_game(
+        ctx.connection_id, ctx.chat_id, message_id=ctx.message.message_id
+    )
 
 
 @router.callback_query(F.data.startswith("chk:"))

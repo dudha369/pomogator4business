@@ -3,6 +3,7 @@ import time
 from core.context import CommandContext
 from core.registry import command
 from core.utils import parse_duration
+from core.self_actions import delete_own_messages
 from core import database as db
 
 
@@ -12,24 +13,22 @@ async def cmd_mute(ctx: CommandContext):
     existing = await db.get_mute(ctx.connection_id, ctx.chat_id)
 
     if not args:
-        await ctx.delete_command_message()
         if existing:
             await db.clear_mute(ctx.connection_id, ctx.chat_id)
-            await ctx.answer(ctx.t("mute.disabled"))
+            await ctx.edit_command_message(ctx.t("mute.disabled"))
         else:
             await db.set_timed_mute(ctx.connection_id, ctx.chat_id, until=None)
-            await ctx.answer(ctx.t("mute.enabled_forever"))
+            await ctx.edit_command_message(ctx.t("mute.enabled_forever"))
         return
 
     seconds = parse_duration(args)
     if seconds is None or seconds <= 0:
-        await ctx.answer(ctx.t("mute.usage"))
+        await ctx.usage_error(ctx.t("mute.usage"))
         return
 
     until = int(time.time()) + seconds
     await db.set_timed_mute(ctx.connection_id, ctx.chat_id, until=until)
-    await ctx.delete_command_message()
-    await ctx.answer(ctx.t("mute.enabled_for", time=args))
+    await ctx.edit_command_message(ctx.t("mute.enabled_for", time=args))
 
 
 @command(name="wmute", module="mute", description="Мутит после N сообщений собеседника")
@@ -38,12 +37,11 @@ async def cmd_wmute(ctx: CommandContext):
 
     if not args:
         await db.clear_mute(ctx.connection_id, ctx.chat_id)
-        await ctx.delete_command_message()
-        await ctx.answer(ctx.t("wmute.disabled"))
+        await ctx.edit_command_message(ctx.t("wmute.disabled"))
         return
 
     if not args[0].isdigit():
-        await ctx.answer(ctx.t("wmute.usage"))
+        await ctx.usage_error(ctx.t("wmute.usage"))
         return
 
     warn_limit = int(args[0])
@@ -51,12 +49,11 @@ async def cmd_wmute(ctx: CommandContext):
     if len(args) > 1:
         warn_duration = parse_duration(args[1])
         if warn_duration is None:
-            await ctx.answer(ctx.t("wmute.invalid_time"))
+            await ctx.reply(ctx.t("wmute.invalid_time"))
             return
 
     await db.set_warn_mute(ctx.connection_id, ctx.chat_id, warn_limit, warn_duration)
-    await ctx.delete_command_message()
-    await ctx.answer(ctx.t("wmute.enabled_after", count=warn_limit))
+    await ctx.edit_command_message(ctx.t("wmute.enabled_after", count=warn_limit))
 
 
 async def handle_incoming(bot, connection, message) -> bool:
@@ -73,13 +70,7 @@ async def handle_incoming(bot, connection, message) -> bool:
         if row["until"] and now >= row["until"]:
             await db.clear_mute(connection_id, chat_id)
             return False
-        try:
-            await bot.delete_business_messages(
-                business_connection_id=connection_id,
-                message_ids=[message.message_id],
-            )
-        except Exception:
-            pass
+        await delete_own_messages(bot, connection_id, chat_id, [message.message_id])
         return True
 
     if row["warn_limit"]:
@@ -87,13 +78,7 @@ async def handle_incoming(bot, connection, message) -> bool:
         if new_count >= row["warn_limit"]:
             until = now + row["warn_duration"] if row["warn_duration"] else None
             await db.activate_from_warn(connection_id, chat_id, until)
-            try:
-                await bot.delete_business_messages(
-                    business_connection_id=connection_id,
-                    message_ids=[message.message_id],
-                )
-            except Exception:
-                pass
+            await delete_own_messages(bot, connection_id, chat_id, [message.message_id])
             return True
         await db.bump_warn_count(connection_id, chat_id, new_count)
         return False

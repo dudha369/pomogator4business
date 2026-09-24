@@ -25,11 +25,11 @@ async def cmd_city(ctx):
 
     if raw.lower() == "stop":
         await db.save_city_game(ctx.connection_id, ctx.chat_id, status="finished")
-        await ctx.answer(ctx.t("city.stopped"))
+        await ctx.reply(ctx.t("city.stopped"))
         return
 
     if not is_valid_city_text(raw):
-        await ctx.answer(ctx.t("city.usage"))
+        await ctx.usage_error(ctx.t("city.usage"))
         return
 
     city = raw.upper()
@@ -43,17 +43,17 @@ async def cmd_city(ctx):
             next_letter=next_letter(city),
             status="active",
         )
-        await ctx.answer(ctx.t("city.started", city=city, letter=next_letter(city)))
+        await ctx.reply(ctx.t("city.started", city=city, letter=next_letter(city)))
         return
 
     used = json.loads(game["used_words"])
 
     if city in used:
-        await ctx.answer(ctx.t("city.already_used", city=city))
+        await ctx.reply(ctx.t("city.already_used", city=city))
         return
 
     if city[0] != game["next_letter"]:
-        await ctx.answer(ctx.t("city.wrong_letter", letter=game["next_letter"]))
+        await ctx.reply(ctx.t("city.wrong_letter", letter=game["next_letter"]))
         return
 
     used.append(city)
@@ -64,4 +64,4 @@ async def cmd_city(ctx):
         used_words=json.dumps(used, ensure_ascii=False),
         next_letter=new_next,
     )
-    await ctx.answer(ctx.t("city.accepted", city=city, letter=new_next))
+    await ctx.reply(ctx.t("city.accepted", city=city, letter=new_next))

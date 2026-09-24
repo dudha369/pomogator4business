@@ -29,7 +29,7 @@ class MirrorManager:
     async def _run(self, bot, dp, owner_id):
         try:
             await bot.delete_webhook(drop_pending_updates=True)
-            await dp.start_polling(bot)
+            await dp.start_polling(bot, owner_id=owner_id)
         except Exception:
             pass
         finally:

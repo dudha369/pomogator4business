@@ -3,7 +3,7 @@ import hashlib
 
 import aiohttp
 
-from config import VT_API_KEY
+from config import settings
 from core.context import CommandContext
 from core.registry import command
 
@@ -38,7 +38,7 @@ async def _download(bot, file_id):
 
 
 async def _get_report(session, sha256):
-    headers = {"x-apikey": VT_API_KEY}
+    headers = {"x-apikey": settings.VT_API_KEY}
     async with session.get(f"{_API_BASE}/files/{sha256}", headers=headers) as resp:
         if resp.status == 200:
             return await resp.json()
@@ -46,7 +46,7 @@ async def _get_report(session, sha256):
 
 
 async def _upload_file(session, data, filename):
-    headers = {"x-apikey": VT_API_KEY}
+    headers = {"x-apikey": settings.VT_API_KEY}
     form = aiohttp.FormData()
     form.add_field("file", data, filename=filename)
     async with session.post(f"{_API_BASE}/files", headers=headers, data=form) as resp:
@@ -55,7 +55,7 @@ async def _upload_file(session, data, filename):
 
 
 async def _wait_for_analysis(session, analysis_id):
-    headers = {"x-apikey": VT_API_KEY}
+    headers = {"x-apikey": settings.VT_API_KEY}
     elapsed = 0
     while elapsed < _ANALYSIS_TIMEOUT:
         async with session.get(
@@ -87,26 +87,26 @@ def _format_report(ctx, stats, sha256):
 
 @command(name="check", module="check", description="Проверяет файл в VirusTotal")
 async def cmd_check(ctx: CommandContext):
-    if not VT_API_KEY:
-        await ctx.answer(ctx.t("check.not_configured"))
+    if not settings.VT_API_KEY:
+        await ctx.reply(ctx.t("check.not_configured"))
         return
 
     target = ctx.message.reply_to_message
     if not target:
-        await ctx.answer(ctx.t("check.usage"))
+        await ctx.usage_error(ctx.t("check.usage"))
         return
 
     extracted = _extract_file(target)
     if not extracted:
-        await ctx.answer(ctx.t("check.no_file"))
+        await ctx.reply(ctx.t("check.no_file"))
         return
 
     file_id, file_size, filename = extracted
     if file_size and file_size > _MAX_SIZE:
-        await ctx.answer(ctx.t("check.too_large"))
+        await ctx.reply(ctx.t("check.too_large"))
         return
 
-    await ctx.answer(ctx.t("check.scanning"))
+    await ctx.reply(ctx.t("check.scanning"))
 
     data = await _download(ctx.bot, file_id)
     sha256 = hashlib.sha256(data).hexdigest()
@@ -118,12 +118,12 @@ async def cmd_check(ctx: CommandContext):
             analysis_id = await _upload_file(session, data, filename)
             analysis = await _wait_for_analysis(session, analysis_id)
             if not analysis:
-                await ctx.answer(ctx.t("check.timeout"))
+                await ctx.reply(ctx.t("check.timeout"))
                 return
             report = await _get_report(session, sha256)
             if not report:
-                await ctx.answer(ctx.t("check.no_report"))
+                await ctx.reply(ctx.t("check.no_report"))
                 return
 
     stats = report["data"]["attributes"]["last_analysis_stats"]
-    await ctx.answer(_format_report(ctx, stats, sha256))
+    await ctx.reply(_format_report(ctx, stats, sha256))

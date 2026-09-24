@@ -10,7 +10,7 @@ _MAX_WORDS = 40
 @command(name="words", module="words", description="Отправляет фразу по одному слову")
 async def cmd_words(ctx: CommandContext):
     if not ctx.args.strip():
-        await ctx.answer(ctx.t("words.usage"))
+        await ctx.usage_error(ctx.t("words.usage"))
         return
 
     words = ctx.args.split()[:_MAX_WORDS]
@@ -19,5 +19,5 @@ async def cmd_words(ctx: CommandContext):
     await asyncio.sleep(_DELAY)
 
     for word in words:
-        await ctx.answer(word)
+        await ctx.reply(word)
         await asyncio.sleep(_DELAY)

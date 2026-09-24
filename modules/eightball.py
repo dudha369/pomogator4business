@@ -11,10 +11,7 @@ async def cmd_8ball(ctx: CommandContext):
     args = ctx.args.strip()
 
     if not args:
-        await ctx.delete_command_message()
-        await ctx.bot.send_message(
-            chat_id=ctx.connection["owner_chat_id"], text=ctx.t("eightball.usage")
-        )
+        await ctx.usage_error(ctx.t("eightball.usage"))
         return
 
     index = random.randint(1, _ANSWER_COUNT)

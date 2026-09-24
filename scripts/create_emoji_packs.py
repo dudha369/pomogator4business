@@ -7,10 +7,10 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from aiogram import Bot
 from aiogram.exceptions import TelegramRetryAfter
 from aiogram.types import BufferedInputFile, InputSticker
+from tortoise import Tortoise
 
-from config import BOT_TOKEN
+from config import TORTOISE_ORM, settings
 from core import database as db
-from core.database import init_db
 
 INPUT_DIR = "assets/generated_emoji"
 PACK_SIZE = 180
@@ -106,9 +106,9 @@ async def main():
         )
         return
 
-    await init_db()
+    await Tortoise.init(config=TORTOISE_ORM, _enable_global_fallback=True)
 
-    bot = Bot(token=BOT_TOKEN)
+    bot = Bot(token=settings.BOT_TOKEN)
     me = await bot.get_me()
     print(f"Паки будут созданы от имени @{me.username}")
 
@@ -127,6 +127,7 @@ async def main():
     print(f"Итого в таблице соответствия: {total_mapped}/{len(times)}")
 
     await bot.session.close()
+    await Tortoise.close_connections()
 
 
 if __name__ == "__main__":

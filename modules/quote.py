@@ -58,12 +58,12 @@ def render_quote(avatar_bytes, name, text):
 async def cmd_quote(ctx: CommandContext):
     target = ctx.message.reply_to_message
     if not target:
-        await ctx.answer(ctx.t("quote.usage_reply"))
+        await ctx.usage_error(ctx.t("quote.usage_reply"))
         return
 
     text = target.text or target.caption
     if not text:
-        await ctx.answer(ctx.t("quote.no_text"))
+        await ctx.reply(ctx.t("quote.no_text"))
         return
 
     name = (

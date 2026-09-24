@@ -4,18 +4,18 @@ import os
 
 from cryptography.fernet import Fernet
 
-from config import BOT_TOKEN
+from config import settings
 
 
 def _derive_key() -> bytes:
     """Ключ шифрования для токенов зеркальных ботов.
 
-    По умолчанию выводится детерминированно из BOT_TOKEN — не нужно
+    По умолчанию выводится детерминированно из settings.BOT_TOKEN — не нужно
     отдельно генерировать и хранить секрет, переживает рестарты и
     редеплои на эфемерной ФС. MIRROR_ENCRYPTION_KEY можно задать явно,
-    если хочется отвязать ключ шифрования от BOT_TOKEN — тогда ротация
+    если хочется отвязать ключ шифрования от settings.BOT_TOKEN — тогда ротация
     токена бота не потребует заново подключать зеркала (иначе, при
-    выводе из BOT_TOKEN, смена токена сделает уже сохранённые
+    выводе из settings.BOT_TOKEN, смена токена сделает уже сохранённые
     token_encrypted нерасшифровываемыми — придётся переподключить их
     через /mirror_connect).
     """
@@ -23,7 +23,9 @@ def _derive_key() -> bytes:
     if env_key:
         return env_key.encode()
 
-    digest = hashlib.sha256(f"pomogator4business-mirror:{BOT_TOKEN}".encode()).digest()
+    digest = hashlib.sha256(
+        f"pomogator4business-mirror:{settings.BOT_TOKEN}".encode()
+    ).digest()
     return base64.urlsafe_b64encode(digest)
 
 

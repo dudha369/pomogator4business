@@ -3,6 +3,7 @@ from aiogram.types import BufferedInputFile
 from core.context import CommandContext
 from core.ffmpeg import apply_audio_filter
 from core.registry import command
+from core.self_actions import delete_own_messages
 from core import database as db
 
 _FILTERS = {
@@ -20,17 +21,15 @@ async def cmd_voice(ctx: CommandContext):
 
     if effect in ("off", ""):
         await db.set_voice_effect(ctx.connection_id, ctx.chat_id, None)
-        await ctx.delete_command_message()
-        await ctx.answer(ctx.t("voice.disabled"))
+        await ctx.edit_command_message(ctx.t("voice.disabled"))
         return
 
     if effect not in _FILTERS:
-        await ctx.answer(ctx.t("voice.usage"))
+        await ctx.usage_error(ctx.t("voice.usage"))
         return
 
     await db.set_voice_effect(ctx.connection_id, ctx.chat_id, effect)
-    await ctx.delete_command_message()
-    await ctx.answer(ctx.t("voice.enabled", effect=effect))
+    await ctx.edit_command_message(ctx.t("voice.enabled", effect=effect))
 
 
 async def handle_voice_message(bot, connection, message) -> bool:
@@ -50,13 +49,9 @@ async def handle_voice_message(bot, connection, message) -> bool:
     if processed is None:
         return False
 
-    try:
-        await bot.delete_business_messages(
-            business_connection_id=connection["connection_id"],
-            message_ids=[message.message_id],
-        )
-    except Exception:
-        pass
+    await delete_own_messages(
+        bot, connection["connection_id"], message.chat.id, [message.message_id]
+    )
 
     try:
         await bot.send_voice(

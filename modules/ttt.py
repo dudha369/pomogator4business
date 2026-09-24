@@ -17,7 +17,7 @@ _LINES = [
     (0, 4, 8),
     (2, 4, 6),
 ]
-_SYMBOLS = {"X": "❌", "O": "⭕", ".": "·"}
+_SYMBOLS = {"X": "❌", "O": "⭕", ".": "⠀"}
 
 
 def _check_winner(board):
@@ -89,9 +89,10 @@ async def cmd_ttt(ctx):
     text = _build_text(ctx.locale, game, None)
     keyboard = _build_keyboard(game["board"], False)
 
-    await ctx.delete_command_message()
-    sent = await ctx.answer(text, reply_markup=keyboard)
-    await db.save_ttt_game(ctx.connection_id, ctx.chat_id, message_id=sent.message_id)
+    await ctx.edit_command_message(text, reply_markup=keyboard)
+    await db.save_ttt_game(
+        ctx.connection_id, ctx.chat_id, message_id=ctx.message.message_id
+    )
 
 
 async def _get_locale_for(owner_id):

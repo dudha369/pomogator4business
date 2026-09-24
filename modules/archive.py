@@ -6,6 +6,7 @@ from aiogram.types import BusinessMessagesDeleted, Message
 from core import database as db
 from core.i18n import t
 from core.registry import registry
+from core.self_actions import consume_self_delete
 
 router = Router(name="archive")
 registry.register_passive_module("archive")
@@ -36,40 +37,38 @@ async def on_business_edited(message: Message, bot: Bot):
     if new_text is None:
         return
 
-    old_text = await db.get_history_text(
-        connection_id, message.chat.id, message.message_id
-    )
-
     connection = await db.get_connection(connection_id)
     if not connection:
         return
 
     is_owner = message.from_user.id == connection["owner_id"]
-    locale = await db.get_locale(connection["owner_id"])
-    sender_label = (
-        t("archive.sender_you", locale)
-        if is_owner
-        else t("archive.sender_other", locale)
-    )
 
-    if old_text is not None and old_text != new_text:
-        try:
-            await bot.send_message(
-                chat_id=connection["owner_chat_id"],
-                text=_format_edited(locale, old_text, new_text, sender_label),
-            )
-        except Exception:
-            pass
-
-        await db.log_archive_event(
-            connection_id,
-            message.chat.id,
-            message.message_id,
-            "edited",
-            old_text,
-            new_text,
-            int(time.time()),
+    if not is_owner:
+        old_text = await db.get_history_text(
+            connection_id, message.chat.id, message.message_id
         )
+        if old_text is not None and old_text != new_text:
+            locale = await db.get_locale(connection["owner_id"])
+            try:
+                await bot.send_message(
+                    chat_id=connection["owner_chat_id"],
+                    text=_format_edited(
+                        locale, old_text, new_text, t("archive.sender_other", locale)
+                    ),
+                    parse_mode="html",
+                )
+            except Exception:
+                pass
+
+            await db.log_archive_event(
+                connection_id,
+                message.chat.id,
+                message.message_id,
+                "edited",
+                old_text,
+                new_text,
+                int(time.time()),
+            )
 
     await db.save_history(
         connection_id,
@@ -93,17 +92,27 @@ async def on_business_deleted(event: BusinessMessagesDeleted, bot: Bot):
         return
 
     locale = await db.get_locale(connection["owner_id"])
-    sender_label = t("archive.sender_both", locale)
 
     for message_id in event.message_ids:
-        old_text = await db.get_history_text(connection_id, event.chat.id, message_id)
-        if old_text is None:
+        if consume_self_delete(connection_id, event.chat.id, message_id):
+            await db.delete_history(connection_id, event.chat.id, message_id)
             continue
+
+        entry = await db.get_history_entry(connection_id, event.chat.id, message_id)
+        if entry is None:
+            continue
+
+        sender_label = (
+            t("archive.sender_you", locale)
+            if entry["is_owner"]
+            else t("archive.sender_other", locale)
+        )
 
         try:
             await bot.send_message(
                 chat_id=connection["owner_chat_id"],
-                text=_format_deleted(locale, old_text, sender_label),
+                text=_format_deleted(locale, entry["text"], sender_label),
+                parse_mode="html",
             )
         except Exception:
             pass
@@ -113,7 +122,7 @@ async def on_business_deleted(event: BusinessMessagesDeleted, bot: Bot):
             event.chat.id,
             message_id,
             "deleted",
-            old_text,
+            entry["text"],
             None,
             int(time.time()),
         )

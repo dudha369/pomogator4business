@@ -110,6 +110,29 @@ async def get_emoji_status(user: dict = Depends(require_user)):
     }
 
 
+class EmojiStatusGrant(BaseModel):
+    granted: bool
+
+
+@router.post("/emoji-status/grant")
+async def grant_emoji_status(
+    payload: EmojiStatusGrant, user: dict = Depends(require_user)
+):
+    """Фронтенд обязан дёрнуть этот эндпоинт сразу после
+    Telegram.WebApp.requestEmojiStatusAccess() — сам факт разрешения на
+    стороне клиента Telegram нигде не сохраняется автоматически, серверу
+    об этом нужно сообщить явно."""
+    owner_id = user["id"]
+    await db.set_emoji_status_granted(owner_id, payload.granted)
+    if payload.granted:
+        await db.set_emoji_status_enabled(owner_id, True)
+
+    return {
+        "granted": await db.is_emoji_status_granted(owner_id),
+        "enabled": await db.is_emoji_status_enabled(owner_id),
+    }
+
+
 @router.get("/locale")
 async def get_locale(user: dict = Depends(require_user)):
     return {"locale": await db.get_locale(user["id"])}

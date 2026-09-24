@@ -1,6 +1,6 @@
 import asyncio
 
-from config import WHISPER_MODEL_SIZE
+from config import settings
 
 _model = None
 _model_lock = asyncio.Lock()
@@ -16,7 +16,10 @@ async def _get_model():
             from faster_whisper import WhisperModel
 
             _model = await asyncio.to_thread(
-                WhisperModel, WHISPER_MODEL_SIZE, device="cpu", compute_type="int8"
+                WhisperModel,
+                settings.WHISPER_MODEL_SIZE,
+                device="cpu",
+                compute_type="int8",
             )
     return _model
 
