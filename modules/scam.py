@@ -76,8 +76,18 @@ async def handle_new_contact(bot, connection, message: Message):
 
     chat_id = message.chat.id
     owner_id = connection["owner_id"]
+    connection_id = connection["connection_id"]
 
     if await db.is_known_chat(owner_id, chat_id):
+        return
+
+    # known_chats — отдельный кэш; если он вдруг пуст не из-за реально
+    # нового контакта (например, таблицу пересоздавали при миграции), это
+    # не должно превращаться в ложную тревогу для людей, с которыми
+    # переписка идёт уже давно. Проверяем по факту — есть ли в истории
+    # хоть одно сообщение, кроме текущего.
+    if await db.has_other_messages(connection_id, chat_id, message.message_id):
+        await db.mark_known_chat(owner_id, chat_id)
         return
 
     await db.mark_known_chat(owner_id, chat_id)

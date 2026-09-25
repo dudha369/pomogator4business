@@ -31,6 +31,7 @@ from db.models.message_history import (
     get_history_entry,
     get_history_text,
     get_recent_history,
+    has_other_messages,
     save_history,
 )
 from db.models.message_log import log_message, pop_recent_message_ids
@@ -91,6 +92,7 @@ __all__ = [
     "get_guess_game",
     "get_hangman_game",
     "get_history_entry",
+    "has_other_messages",
     "get_history_text",
     "get_last_post_date",
     "get_locale",

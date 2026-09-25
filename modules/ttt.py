@@ -23,30 +23,53 @@ _SYMBOLS = {"X": "❌", "O": "⭕", ".": "⠀"}
 def _check_winner(board):
     for a, b, c in _LINES:
         if board[a] != "." and board[a] == board[b] == board[c]:
-            return board[a]
+            return board[a], {a, b, c}
+
     if "." not in board:
-        return "draw"
-    return None
+        return "draw", set()
+
+    return None, set()
 
 
-def _build_keyboard(board, finished):
+def _build_keyboard(board, finished, winning_line=None):
     rows = []
+    winning_line = winning_line or set()
+
     for r in range(3):
         row = []
+
         for c in range(3):
             idx = r * 3 + c
             cell = board[idx]
+
             if finished:
                 callback_data = "ttt:noop"
             else:
                 callback_data = f"ttt:{idx}" if cell == "." else "ttt:taken"
-            row.append(
-                InlineKeyboardButton(text=_SYMBOLS[cell], callback_data=callback_data)
-            )
+
+            button_kwargs = {
+                "text": _SYMBOLS[cell],
+                "callback_data": callback_data,
+            }
+
+            # Подсвечиваем только победившие клетки
+            if idx in winning_line:
+                button_kwargs["style"] = "success"
+
+            row.append(InlineKeyboardButton(**button_kwargs))
+
         rows.append(row)
 
     if finished:
-        rows.append([InlineKeyboardButton(text="🔄", callback_data="ttt:restart")])
+        rows.append(
+            [
+                InlineKeyboardButton(
+                    text="🔄",
+                    callback_data="ttt:restart",
+                    style="primary",
+                )
+            ]
+        )
 
     return InlineKeyboardMarkup(inline_keyboard=rows)
 
@@ -178,7 +201,9 @@ async def on_ttt_callback(call: CallbackQuery):
 
     board[idx] = symbol
     board_str = "".join(board)
-    winner = _check_winner(board_str)
+
+    winner, winning_line = _check_winner(board_str)
+
     next_turn = "O" if symbol == "X" else "X"
     status = "finished" if winner else "active"
 
@@ -193,6 +218,10 @@ async def on_ttt_callback(call: CallbackQuery):
 
     await call.message.edit_text(
         _build_text(locale, game, winner),
-        reply_markup=_build_keyboard(board_str, bool(winner)),
+        reply_markup=_build_keyboard(
+            board_str,
+            bool(winner),
+            winning_line,
+        ),
     )
     await call.answer()

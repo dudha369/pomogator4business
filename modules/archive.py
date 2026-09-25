@@ -1,6 +1,6 @@
 import time
 
-from aiogram import Bot, Router
+from aiogram import Bot, Router, html
 from aiogram.types import BusinessMessagesDeleted, Message
 
 from core import database as db
@@ -53,7 +53,7 @@ async def on_business_edited(message: Message, bot: Bot):
                 await bot.send_message(
                     chat_id=connection["owner_chat_id"],
                     text=_format_edited(
-                        locale, old_text, new_text, t("archive.sender_other", locale)
+                        locale, old_text, new_text, message.from_user.mention_html()
                     ),
                     parse_mode="html",
                 )
@@ -105,7 +105,9 @@ async def on_business_deleted(event: BusinessMessagesDeleted, bot: Bot):
         sender_label = (
             t("archive.sender_you", locale)
             if entry["is_owner"]
-            else t("archive.sender_other", locale)
+            else html.link(
+                value=event.chat.full_name, link=f"tg://user?id={event.chat.id}"
+            )
         )
 
         try:

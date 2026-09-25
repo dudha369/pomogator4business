@@ -54,6 +54,19 @@ async def delete_history(connection_id, chat_id, message_id):
     ).delete()
 
 
+async def has_other_messages(connection_id, chat_id, exclude_message_id):
+    """True, если для этого чата уже есть история, кроме сообщения
+    exclude_message_id. Резервный сигнал для modules/scam.py на случай,
+    если known_chats пуст не из-за реально нового контакта (например,
+    после восстановления/пересоздания таблицы) — settings.is_known_chat
+    один такой кэш, полагаться только на него небезопасно."""
+    return (
+        await MessageHistory.filter(connection_id=connection_id, chat_id=chat_id)
+        .exclude(message_id=exclude_message_id)
+        .exists()
+    )
+
+
 async def get_recent_history(connection_id, chat_id, limit):
     rows = (
         await MessageHistory.filter(connection_id=connection_id, chat_id=chat_id)
