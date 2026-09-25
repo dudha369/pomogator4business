@@ -12,6 +12,9 @@ router = Router(name="archive")
 registry.register_passive_module("archive")
 
 
+def _format_mention(chat_id, full_name):
+    return f'<a href="tg://openmessage?user_id={chat_id}">{full_name}</a>'
+
 def _format_edited(locale, old_text, new_text, sender_label):
     return t(
         "archive.edited_notice",
@@ -50,10 +53,10 @@ async def on_business_edited(message: Message, bot: Bot):
         if old_text is not None and old_text != new_text:
             locale = await db.get_locale(connection["owner_id"])
             try:
-                mention = message.from_user.mention_html()
+                mention = _format_mention(message.chat.id, message.from_user.full_name)
                 print(mention)
                 txt = _format_edited(
-                        locale, old_text, new_text,
+                        locale, old_text, new_text, mention
                     )
                 print(txt)
                 await bot.send_message(
@@ -109,9 +112,7 @@ async def on_business_deleted(event: BusinessMessagesDeleted, bot: Bot):
         sender_label = (
             t("archive.sender_you", locale)
             if entry["is_owner"]
-            else html.link(
-                value=event.chat.full_name, link=f"tg://user?id={event.chat.id}"
-            )
+            else _format_mention(event.chat.id, event.chat.full_name)
         )
         print("FFfff", sender_label)
         txt = _format_deleted(locale, entry["text"], sender_label)
