@@ -74,13 +74,28 @@ def switch_layout(text: str) -> str:
 @command(name="sw", module="sw", description="Переключает раскладку в сообщении")
 async def cmd_sw(ctx: CommandContext):
     target = ctx.message.reply_to_message
-    if not target:
-        return
 
-    original = target.text or target.caption
-    if not original:
-        return
+    if target:
+        original = target.text or target.caption
+        if not original:
+            return
 
-    converted = switch_layout(original)
+        converted = switch_layout(original)
 
-    await ctx.edit_command_message(converted)
+        if target.from_user.id == ctx.connection["owner_id"]:
+            await ctx.delete_command_message()
+            await ctx.bot.edit_message_text(
+                business_connection_id=ctx.connection_id,
+                chat_id=ctx.chat_id,
+                message_id=target.message_id,
+                text=converted
+            )
+        else:
+            await ctx.edit_command_message(converted)
+
+    else:
+        if ctx.args:
+            await ctx.edit_command_message(switch_layout(ctx.args))
+        else:
+            await ctx.delete_command_message()
+            await ctx.usage_error(ctx.t("sw.usage"))

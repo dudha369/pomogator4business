@@ -52,7 +52,6 @@ def _build_keyboard(board, finished, winning_line=None):
                 "callback_data": callback_data,
             }
 
-            # Подсвечиваем только победившие клетки
             if idx in winning_line:
                 button_kwargs["style"] = "success"
 

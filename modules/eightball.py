@@ -11,6 +11,7 @@ async def cmd_8ball(ctx: CommandContext):
     args = ctx.args.strip()
 
     if not args:
+        await ctx.delete_command_message()
         await ctx.usage_error(ctx.t("eightball.usage"))
         return
 

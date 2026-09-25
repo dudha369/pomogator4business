@@ -13,7 +13,11 @@ async def cmd_words(ctx: CommandContext):
         await ctx.usage_error(ctx.t("words.usage"))
         return
 
-    words = ctx.args.split()[:_MAX_WORDS]
+    if " " in ctx.args:
+        words = ctx.args.split()[:_MAX_WORDS]
+    else:
+        words = [x for x in ctx.args]
+
     await ctx.edit_command_message(words.pop(0))
 
     await asyncio.sleep(_DELAY)

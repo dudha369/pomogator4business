@@ -126,27 +126,61 @@ def _board_from_str(raw):
 
 def _keyboard(board, finished):
     rows = []
+
+    max_tile = max((v for v in board if v != 0), default=0)
+
     for r in range(_SIZE):
         row_buttons = []
+
         for c in range(_SIZE):
             v = board[r * _SIZE + c]
             text = str(v) if v else "⠀"
+
+            callback_data = "g2048:noop"
+
+            button_kwargs = {
+                "text": text,
+                "callback_data": callback_data,
+            }
+
+            if v != 0 and v == max_tile:
+                button_kwargs["style"] = "success"
+
             row_buttons.append(
-                InlineKeyboardButton(text=text, callback_data="g2048:noop")
+                InlineKeyboardButton(**button_kwargs)
             )
+
         rows.append(row_buttons)
 
-    if not finished:
-        rows.append(
-            [
-                InlineKeyboardButton(text="⬅️", callback_data="g2048:left"),
-                InlineKeyboardButton(text="⬆️", callback_data="g2048:up"),
-                InlineKeyboardButton(text="⬇️", callback_data="g2048:down"),
-                InlineKeyboardButton(text="➡️", callback_data="g2048:right"),
-            ]
-        )
-    else:
-        rows.append([InlineKeyboardButton(text="🔄", callback_data="g2048:restart")])
+    rows.append(
+        [
+            InlineKeyboardButton(
+                text="⬅️",
+                callback_data="g2048:left" if not finished else "g2048:noop",
+                style="primary" if not finished else None,
+            ),
+            InlineKeyboardButton(
+                text="⬆️",
+                callback_data="g2048:up" if not finished else "g2048:noop",
+                style="primary" if not finished else None,
+            ),
+            InlineKeyboardButton(
+                text="⬇️",
+                callback_data="g2048:down" if not finished else "g2048:noop",
+                style="primary" if not finished else None,
+            ),
+            InlineKeyboardButton(
+                text="➡️",
+                callback_data="g2048:right" if not finished else "g2048:noop",
+                style="primary" if not finished else None,
+            ),
+            InlineKeyboardButton(
+                text="🔄",
+                callback_data="g2048:restart",
+                style="danger" if not finished else "primary",
+            ),
+        ]
+    )
 
     return InlineKeyboardMarkup(inline_keyboard=rows)
 
