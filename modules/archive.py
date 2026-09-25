@@ -12,8 +12,13 @@ router = Router(name="archive")
 registry.register_passive_module("archive")
 
 
-def _format_mention(chat_id, full_name):
-    return f'<a href="tg://openmessage?user_id={chat_id}">{full_name}</a>'
+def _format_mention(full_name, username=None, chat_id=None):
+    if username is not None:
+        return f'<a href="https://t.me/{username}">{full_name}</a>'
+    elif chat_id is not None:
+        return f'<a href="tg://user?id={chat_id}">{full_name}</a>'
+
+    return full_name
 
 def _format_edited(locale, old_text, new_text, sender_label):
     return t(
@@ -53,15 +58,11 @@ async def on_business_edited(message: Message, bot: Bot):
         if old_text is not None and old_text != new_text:
             locale = await db.get_locale(connection["owner_id"])
             try:
-                mention = _format_mention(message.chat.id, message.from_user.full_name)
-                print(mention)
-                txt = _format_edited(
-                        locale, old_text, new_text, mention
-                    )
-                print(txt)
                 await bot.send_message(
                     chat_id=connection["owner_chat_id"],
-                    text=txt,
+                    text=_format_edited(
+                        locale, old_text, new_text, _format_mention(message.chat.id, message.from_user.full_name)
+                    ),
                     parse_mode="html",
                 )
             except Exception:
@@ -114,14 +115,11 @@ async def on_business_deleted(event: BusinessMessagesDeleted, bot: Bot):
             if entry["is_owner"]
             else _format_mention(event.chat.id, event.chat.full_name)
         )
-        print("FFfff", sender_label)
-        txt = _format_deleted(locale, entry["text"], sender_label)
-        print(txt)
 
         try:
             await bot.send_message(
                 chat_id=connection["owner_chat_id"],
-                text=txt,
+                text=_format_deleted(locale, entry["text"], sender_label),
                 parse_mode="html",
             )
         except Exception:
