@@ -50,11 +50,15 @@ async def on_business_edited(message: Message, bot: Bot):
         if old_text is not None and old_text != new_text:
             locale = await db.get_locale(connection["owner_id"])
             try:
+                mention = message.from_user.mention_html()
+                print(mention)
+                txt = _format_edited(
+                        locale, old_text, new_text,
+                    )
+                print(txt)
                 await bot.send_message(
                     chat_id=connection["owner_chat_id"],
-                    text=_format_edited(
-                        locale, old_text, new_text, message.from_user.mention_html()
-                    ),
+                    text=txt,
                     parse_mode="html",
                 )
             except Exception:
@@ -109,11 +113,14 @@ async def on_business_deleted(event: BusinessMessagesDeleted, bot: Bot):
                 value=event.chat.full_name, link=f"tg://user?id={event.chat.id}"
             )
         )
+        print("FFfff", sender_label)
+        txt = _format_deleted(locale, entry["text"], sender_label)
+        print(txt)
 
         try:
             await bot.send_message(
                 chat_id=connection["owner_chat_id"],
-                text=_format_deleted(locale, entry["text"], sender_label),
+                text=txt,
                 parse_mode="html",
             )
         except Exception:
