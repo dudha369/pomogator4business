@@ -1,24 +1,11 @@
-import asyncio
 import logging
-from datetime import date, datetime
+from datetime import datetime
 
 from aiogram.exceptions import TelegramBadRequest, TelegramForbiddenError
 
 from core import database as db
-from modules.story import autopost_tick
-
-_CHECK_INTERVAL = 3600
 
 logger = logging.getLogger("bot.scheduler")
-
-
-async def run(bot):
-    while True:
-        try:
-            await autopost_tick(bot, date.today().isoformat())
-        except Exception:
-            pass
-        await asyncio.sleep(_CHECK_INTERVAL)
 
 
 async def emoji_clock_tick(bot):

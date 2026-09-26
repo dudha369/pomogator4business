@@ -12,13 +12,14 @@ router = Router(name="archive")
 registry.register_passive_module("archive")
 
 
-def _format_mention(full_name, username=None, chat_id=None):
+def _format_mention(full_name, username, chat_id):
     if username is not None:
         return f'<a href="https://t.me/{username}">{full_name}</a>'
     elif chat_id is not None:
         return f'<a href="tg://user?id={chat_id}">{full_name}</a>'
 
     return full_name
+
 
 def _format_edited(locale, old_text, new_text, sender_label):
     return t(
@@ -61,7 +62,14 @@ async def on_business_edited(message: Message, bot: Bot):
                 await bot.send_message(
                     chat_id=connection["owner_chat_id"],
                     text=_format_edited(
-                        locale, old_text, new_text, _format_mention(message.chat.id, message.from_user.full_name)
+                        locale,
+                        old_text,
+                        new_text,
+                        _format_mention(
+                            message.from_user.full_name,
+                            message.from_user.username,
+                            message.chat.id,
+                        ),
                     ),
                     parse_mode="html",
                 )
@@ -113,7 +121,9 @@ async def on_business_deleted(event: BusinessMessagesDeleted, bot: Bot):
         sender_label = (
             t("archive.sender_you", locale)
             if entry["is_owner"]
-            else _format_mention(event.chat.id, event.chat.full_name)
+            else _format_mention(
+                event.chat.full_name, event.chat.username, event.chat.id
+            )
         )
 
         try:

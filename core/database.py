@@ -56,15 +56,7 @@ from db.models.mute import (
     set_warn_mute,
 )
 from db.models.profile_backup import get_profile_backup, save_profile_backup
-from db.models.story import (
-    get_autopost_enabled_connections,
-    get_last_post_date,
-    is_autopost_enabled,
-    pop_next_tile,
-    queue_story_tiles,
-    set_last_post_date,
-    toggle_autopost,
-)
+from db.models.story import is_autopost_enabled, toggle_autopost
 from db.models.ttt import get_ttt_game, save_ttt_game
 from db.models.user_locale import get_locale, set_locale
 from db.models.voice_effect import get_voice_effect, set_voice_effect
@@ -81,7 +73,6 @@ __all__ = [
     "enable_module",
     "get_active_emoji_status_owners",
     "get_all_active_mirrors",
-    "get_autopost_enabled_connections",
     "get_chk_game",
     "get_city_game",
     "get_clock_emoji",
@@ -94,7 +85,6 @@ __all__ = [
     "get_history_entry",
     "has_other_messages",
     "get_history_text",
-    "get_last_post_date",
     "get_locale",
     "get_mirror",
     "get_ms_game",
@@ -114,9 +104,7 @@ __all__ = [
     "log_archive_event",
     "log_message",
     "mark_known_chat",
-    "pop_next_tile",
     "pop_recent_message_ids",
-    "queue_story_tiles",
     "save_chk_game",
     "save_city_game",
     "save_clock_emoji",
@@ -131,7 +119,6 @@ __all__ = [
     "save_wordle_game",
     "set_emoji_status_enabled",
     "set_emoji_status_granted",
-    "set_last_post_date",
     "set_locale",
     "set_prefix",
     "set_timed_mute",

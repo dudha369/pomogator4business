@@ -88,7 +88,7 @@ async def cmd_sw(ctx: CommandContext):
                 business_connection_id=ctx.connection_id,
                 chat_id=ctx.chat_id,
                 message_id=target.message_id,
-                text=converted
+                text=converted,
             )
         else:
             await ctx.edit_command_message(converted)

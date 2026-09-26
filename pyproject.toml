@@ -15,6 +15,7 @@ dependencies = [
     "python-dotenv>=1.2.1",
     "qrcode>=8.2",
     "tomlkit>=0.15.1",
+    "tortoise>=0.1.1",
     "tortoise-orm>=1.0",
     "uvicorn>=0.39.0",
 ]

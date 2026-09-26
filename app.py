@@ -12,7 +12,6 @@ from config import TORTOISE_ORM, settings
 from core.loader import load_modules
 from core.logging_config import configure_logging
 from core.mirror_manager import mirror_manager
-from core.scheduler import run as run_story_scheduler
 from core.scheduler import run_emoji_clock
 
 _background_tasks: list[asyncio.Task] = []
@@ -34,7 +33,6 @@ async def lifespan(app: FastAPI):
     else:
         logging.warning("WEBHOOK_BASE_URL не задан — вебхук не установлен")
 
-    _background_tasks.append(asyncio.create_task(run_story_scheduler(bot)))
     _background_tasks.append(asyncio.create_task(run_emoji_clock(bot)))
     _background_tasks.append(asyncio.create_task(mirror_manager.start_all()))
 

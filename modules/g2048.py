@@ -146,9 +146,7 @@ def _keyboard(board, finished):
             if v != 0 and v == max_tile:
                 button_kwargs["style"] = "success"
 
-            row_buttons.append(
-                InlineKeyboardButton(**button_kwargs)
-            )
+            row_buttons.append(InlineKeyboardButton(**button_kwargs))
 
         rows.append(row_buttons)
 

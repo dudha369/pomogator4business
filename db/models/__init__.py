@@ -16,7 +16,7 @@ from .mirror_bot import MirrorBot
 from .module_settings import DisabledModule
 from .mute import Mute
 from .profile_backup import ProfileBackup
-from .story import StoryAutopost, StoryQueue
+from .story import StoryAutopost
 from .ttt import TttGame
 from .user_locale import UserLocale
 from .voice_effect import VoiceEffect
@@ -43,7 +43,6 @@ __all__ = [
     "Mute",
     "ProfileBackup",
     "StoryAutopost",
-    "StoryQueue",
     "TttGame",
     "UserLocale",
     "VoiceEffect",

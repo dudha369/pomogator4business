@@ -42,7 +42,6 @@ from db.models import (
     Mute,
     ProfileBackup,
     StoryAutopost,
-    StoryQueue,
     TttGame,
     UserLocale,
     VoiceEffect,
@@ -198,14 +197,8 @@ async def main():
                 last_post_date=r["last_post_date"],
             ),
         )
-        await migrate_simple(
-            conn,
-            "story_queue",
-            StoryQueue,
-            lambda r: StoryQueue(
-                connection_id=r["connection_id"], tile_data=r["tile_data"]
-            ),
-        )
+        # story_queue больше не существует как фича (см. modules/story.py) —
+        # её данные сознательно не переносятся.
         connection_owner = await _connection_owner_map(conn)
         await migrate_known_chats(conn, connection_owner)
         await migrate_simple(

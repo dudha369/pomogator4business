@@ -1,7 +1,7 @@
 import asyncio
 import io
 
-from PIL import Image
+from PIL import Image, ImageFilter
 from aiogram.types import (
     BufferedInputFile,
     InputMediaPhoto,
@@ -20,57 +20,66 @@ _GRID = {
 _ACTIVE_PERIOD = 86400
 _POST_DELAY = 1.0
 
-# Ровно то, что требует Telegram для Историй (1080x1920, 9:16). Каждый тайл
-# должен сам по себе быть именно такого размера — иначе при просмотре
-# мозаика "поплывёт", даже если исходное фото было разрезано ровно.
+# Ровно то, что требует Telegram для Историй (1080x1920, 9:16).
 _TILE_W = 1080
 _TILE_H = 1920
+_BLUR_RADIUS = 40
 
 
-def _cover_crop(image: Image.Image, target_w: int, target_h: int) -> Image.Image:
-    """Растягивает/обрезает image так, чтобы он ЗАПОЛНИЛ target_w x target_h
-    без искажения пропорций (аналог CSS object-fit: cover) — лишнее по
-    краям обрезается, а не остаётся полосами."""
-    src_w, src_h = image.size
-    src_ratio = src_w / src_h
-    target_ratio = target_w / target_h
+def _blur_letterbox(cell: Image.Image, target_w: int, target_h: int) -> Image.Image:
+    """Вписывает cell в target_w x target_h БЕЗ обрезки содержимого — а
+    пустые поля заполняет размытой растянутой версией той же cell, а не
+    сплошным цветом (так делают Instagram/TikTok для контента не того
+    соотношения сторон). Именно так должен выглядеть каждый тайл, чтобы
+    при просмотре подряд мозаика собралась в исходное фото без потерь по
+    краям."""
+    cell_w, cell_h = cell.size
 
-    if src_ratio > target_ratio:
-        new_h = target_h
-        new_w = round(src_w * (target_h / src_h))
-    else:
-        new_w = target_w
-        new_h = round(src_h * (target_w / src_w))
+    # Размытый фон на весь канвас — "cover" (с запасом, лишнее обрезаем).
+    bg_scale = max(target_w / cell_w, target_h / cell_h)
+    bg = cell.resize(
+        (round(cell_w * bg_scale), round(cell_h * bg_scale)), Image.LANCZOS
+    )
+    bg_left = (bg.width - target_w) // 2
+    bg_top = (bg.height - target_h) // 2
+    bg = bg.crop((bg_left, bg_top, bg_left + target_w, bg_top + target_h))
+    bg = bg.filter(ImageFilter.GaussianBlur(_BLUR_RADIUS))
 
-    resized = image.resize((new_w, new_h), Image.LANCZOS)
-    left = (new_w - target_w) // 2
-    top = (new_h - target_h) // 2
-    return resized.crop((left, top, left + target_w, top + target_h))
+    # Резкий передний план — "contain" (без обрезки содержимого).
+    fg_scale = min(target_w / cell_w, target_h / cell_h)
+    fg = cell.resize(
+        (round(cell_w * fg_scale), round(cell_h * fg_scale)), Image.LANCZOS
+    )
+
+    canvas = bg
+    paste_x = (target_w - fg.width) // 2
+    paste_y = (target_h - fg.height) // 2
+    canvas.paste(fg, (paste_x, paste_y))
+    return canvas
 
 
 def split_image(image_bytes, parts):
-    """Режет фото на сетку тайлов размером ровно _TILE_W x _TILE_H каждый.
-
-    Сначала всё исходное фото приводится (обрезкой, не растяжением) к
-    размеру ВСЕЙ сетки целиком (cols*_TILE_W x rows*_TILE_H), и только
-    потом эта единая картинка режется на решётку — так каждый отдельный
-    тайл получается точно нужных Telegram пропорций 9:16, а не пропорций
-    исходного фото.
+    """Режет ИСХОДНОЕ фото на сетку rows x cols "как есть" (без потери
+    содержимого), затем каждую получившуюся ячейку вписывает в 1080x1920
+    через _blur_letterbox. Порядок тайлов — слева направо, сверху вниз.
     """
     rows, cols = _GRID[parts]
     image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-    canvas = _cover_crop(image, _TILE_W * cols, _TILE_H * rows)
+    src_w, src_h = image.size
+    cell_w = src_w // cols
+    cell_h = src_h // rows
 
     tiles = []
     for row in range(rows):
         for col in range(cols):
             box = (
-                col * _TILE_W,
-                row * _TILE_H,
-                (col + 1) * _TILE_W,
-                (row + 1) * _TILE_H,
+                col * cell_w,
+                row * cell_h,
+                src_w if col == cols - 1 else (col + 1) * cell_w,
+                src_h if row == rows - 1 else (row + 1) * cell_h,
             )
-            tile = canvas.crop(box)
+            cell = image.crop(box)
+            tile = _blur_letterbox(cell, _TILE_W, _TILE_H)
             buffer = io.BytesIO()
             tile.save(buffer, format="JPEG", quality=95)
             tiles.append(buffer.getvalue())
@@ -97,57 +106,30 @@ async def _post_all(bot, connection_id, tiles):
         await asyncio.sleep(_POST_DELAY)
 
 
-def _parts_from_args(raw_args: str) -> int:
-    raw_parts = raw_args.strip()
-    return int(raw_parts) if raw_parts.isdigit() and int(raw_parts) in _GRID else 9
-
-
-async def _get_target_tiles(ctx: CommandContext):
-    """Общая часть /story и /storysplit: найти фото в реплае и разрезать."""
+@command(
+    name="story",
+    module="story",
+    description="Разрезает фото на части: /storyautopost вкл — публикует как Истории по порядку, выкл — присылает файлы владельцу в ЛС",
+)
+async def cmd_story(ctx: CommandContext):
     target = ctx.message.reply_to_message
     if not target or not target.photo:
         await ctx.usage_error(ctx.t("story.usage_reply"))
-        return None
+        return
 
-    parts = _parts_from_args(ctx.args)
+    raw_parts = ctx.args.strip()
+    parts = int(raw_parts) if raw_parts.isdigit() and int(raw_parts) in _GRID else 9
+
     photo = target.photo[-1]
     file = await ctx.bot.get_file(photo.file_id)
     buffer = await ctx.bot.download_file(file.file_path)
-    return split_image(buffer.read(), parts), parts
-
-
-@command(
-    name="story", module="story", description="Разрезает фото и публикует как Истории"
-)
-async def cmd_story(ctx: CommandContext):
-    result = await _get_target_tiles(ctx)
-    if result is None:
-        return
-    tiles, parts = result
+    tiles = split_image(buffer.read(), parts)
 
     await ctx.delete_command_message()
 
     if await db.is_autopost_enabled(ctx.connection_id):
-        await db.queue_story_tiles(ctx.connection_id, tiles)
-        await ctx.edit_command_message(ctx.t("story.queued", parts=parts))
+        await _post_all(ctx.bot, ctx.connection_id, tiles)
         return
-
-    await _post_all(ctx.bot, ctx.connection_id, tiles)
-    await ctx.edit_command_message(ctx.t("story.published", parts=parts))
-
-
-@command(
-    name="storysplit",
-    module="story",
-    description="Просто разрезает фото на части — без публикации в Истории",
-)
-async def cmd_storysplit(ctx: CommandContext):
-    result = await _get_target_tiles(ctx)
-    if result is None:
-        return
-    tiles, _parts = result
-
-    await ctx.delete_command_message()
 
     media = [
         InputMediaPhoto(media=BufferedInputFile(tile, filename=f"tile_{i + 1}.jpg"))
@@ -155,8 +137,7 @@ async def cmd_storysplit(ctx: CommandContext):
     ]
     try:
         await ctx.bot.send_media_group(
-            business_connection_id=ctx.connection_id,
-            chat_id=ctx.chat_id,
+            chat_id=ctx.connection["owner_chat_id"],
             media=media,
         )
     except Exception:
@@ -166,24 +147,9 @@ async def cmd_storysplit(ctx: CommandContext):
 @command(
     name="storyautopost",
     module="story",
-    description="Переключает публикацию по одному тайлу в день вместо сразу всех",
+    description="Переключает: /story публикует сразу как Истории, или просто присылает файлы владельцу в ЛС",
 )
 async def cmd_storyautopost(ctx: CommandContext):
     enabled = await db.toggle_autopost(ctx.connection_id)
     status = ctx.t("story.status_on") if enabled else ctx.t("story.status_off")
     await ctx.edit_command_message(ctx.t("story.autopost_toggled", status=status))
-
-
-async def autopost_tick(bot, today: str):
-    connections = await db.get_autopost_enabled_connections()
-    for connection_id in connections:
-        if await db.get_last_post_date(connection_id) == today:
-            continue
-        tile_bytes = await db.pop_next_tile(connection_id)
-        if tile_bytes is None:
-            continue
-        try:
-            await _post_tile(bot, connection_id, tile_bytes)
-            await db.set_last_post_date(connection_id, today)
-        except Exception:
-            pass
